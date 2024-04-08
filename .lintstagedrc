@@ -1,0 +1,8 @@
+{
+  "*.{js,json,ts,yaml,yml}": [
+    "prettier --config ./.prettierrc.json --write"
+  ],
+  "*.sol": [
+    "forge fmt", "prettier --config ./.prettierrc.json --write"
+  ]
+}

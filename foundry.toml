@@ -1,0 +1,82 @@
+# To easily switch between profiles add the following to your
+# .bashrc or .zshrc: function profile() { FOUNDRY_PROFILE=$1 "${@:2}" }
+# Then you can invoke like this: `profile test forge build -w`
+
+# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+
+[profile.default]
+# The source directory
+src = 'src/contracts'
+# the test directoy
+test = 'src/test'
+# The artifact directory
+out = 'out'
+# The script directory
+script = "src/script"
+# A list of paths to look for libraries in
+libs = ['lib', 'node_modules']
+# Whether or not to enable `vm.ffi`
+ffi = false
+# Enables or disables the optimizer
+optimizer = false
+# The number of optimizer runs
+optimizer_runs = 200 
+# use the via-ir compiler flag
+via_ir = false
+# include metadata hash in bytecode
+bytecode_hash = "none"
+# Whether to append the metadata hash to the bytecode
+cbor_metadata = false
+# Contracts to track with --gas-report
+#gas_reports = []
+ignored_error_codes = [3628, 5574]
+
+
+[fuzz]
+# Amount of runs per fuzz test
+runs = 1024
+
+[profile.src]
+test = "_" # Makes building faster
+script = "_"
+optimizer = false
+
+[profile.script]
+src = "_"
+test = "_"
+optimizer = false 
+
+[profile.deploy]
+src = "_"
+test = "_"
+optimizer = true
+optimizer_runs = 1_000_000_000
+via_ir = true
+
+[profile.test]
+src = "_"
+script = "_"
+optimizer = false
+build_info = false
+extra_output = []
+verbosity = 3
+via_ir = false
+
+[fmt]
+single_line_statement_blocks = "single"
+multiline_func_header = "params_first"
+line_length = 1000 # This gets overriden by prettier afterwards
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+number_underscore = "thousands"
+sort_imports = true
+contract_new_lines = true
+override_spacing = false
+# ignore = ["src/contracts/openzeppelin-modified/*"]
+
+[rpc_endpoints]
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}", url = "${ETHERSCAN_API_URL}" }
+polygon = { key = "${POLYGONSCAN_API_KEY}", url = "${POLYGONSCAN_API_URL}" }

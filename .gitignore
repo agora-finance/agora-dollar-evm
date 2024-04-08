@@ -1,0 +1,25 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Dotenv file
+.env
+
+#misc
+node_modules
+.DS_Store
+.vscode
+lcov.info
+report/
+.idea/
+
+# For searching in vscode
+.git
+
+# 
+.VSCodeCounter

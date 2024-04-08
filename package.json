@@ -1,0 +1,29 @@
+{
+  "author": "Drake Evans (x.com/drakeevansv1)",
+  "name": "agora-dollar-evm",
+  "version": "0.0.1",
+  "description": "Contracts for Agora Dollar",
+  "scripts": {
+    "test": "",
+    "prepare": "husky install",
+    "format": "forge fmt src && prettier --config ./.prettierrc.json --write src",
+    "generate:constants": "ts-node -T scripts/generateConstants.ts"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts-upgradeable": "^5.0.2",
+    "ds-test": "github:dapphub/ds-test",
+    "forge-std": "github:foundry-rs/forge-std",
+    "solady": "^0.0.181"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.3.0",
+    "prettier": "^3.3.2",
+    "solhint-community": "^3.7.0",
+    "solhint-plugin-prettier": "^0.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
