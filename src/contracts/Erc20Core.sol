@@ -64,7 +64,7 @@ abstract contract Erc20Core is IErc20Errors {
 
         // Effects: update balances on the _to account
         unchecked {
-            // Overflow not possible: _transferValue + toBalance <= (2^248 -1) x 10^18 [more money than atoms in the galaxy]
+            // Overflow not possible: _transferValue + toBalance <= (2^248 -1) x 10^-6 [more money than atoms in the galaxy]
             StorageLib.getPointerToErc20CoreStorage().accountData[_to].balance =
                 _accountDataTo.balance +
                 _transferValue;

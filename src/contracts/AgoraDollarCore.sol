@@ -38,7 +38,7 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
 
     ShortString internal immutable _symbol;
 
-    uint8 public immutable decimals = 18;
+    uint8 public immutable decimals = 6;
 
     constructor(ConstructorParams memory _params) Eip712(_params.eip712Name, _params.eip712Version) {
         _name = _params.name.toShortString();
