@@ -68,6 +68,9 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
         // Checks: sender must be burner
         _requireSenderIsRole(BURNER_ROLE);
 
+        // Checks: burnFrom must not be paused
+        if (StorageLib.sloadImplementationSlotDataAsUint256().isBurnFromPaused()) revert StorageLib.BurnFromPaused();
+
         for (uint256 i = 0; i < _burns.length; i++) {
             // Effects: subtract from totalSupply and account balance
             uint248 _value248 = _burns[i].value.toUint248();

@@ -208,6 +208,10 @@ contract AgoraDollar is AgoraDollarCore {
         return StorageLib.sloadImplementationSlotDataAsUint256().isMintPaused();
     }
 
+    function isBurnFromPaused() external view returns (bool) {
+        return StorageLib.sloadImplementationSlotDataAsUint256().isBurnFromPaused();
+    }
+
     function isFreezingPaused() external view returns (bool) {
         return StorageLib.sloadImplementationSlotDataAsUint256().isFreezingPaused();
     }
@@ -242,6 +246,10 @@ contract AgoraDollar is AgoraDollarCore {
 
     function IS_MINT_PAUSED_BIT_POSITION() external pure returns (uint256) {
         return StorageLib.IS_MINT_PAUSED_BIT_POSITION_;
+    }
+
+    function IS_BURN_FROM_PAUSED_BIT_POSITION() external pure returns (uint256) {
+        return StorageLib.IS_BURN_FROM_PAUSED_BIT_POSITION_;
     }
 
     function IS_FREEZING_PAUSED_BIT_POSITION() external pure returns (uint256) {

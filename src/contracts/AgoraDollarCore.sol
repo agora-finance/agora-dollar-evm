@@ -161,6 +161,17 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
         emit SetIsMintPaused({ isPaused: _isPaused });
     }
 
+    function setIsBurnFromPaused(bool _isPaused) external {
+        _requireSenderIsRole({ _role: PAUSER_ROLE });
+        uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
+        uint256 _newContractData = _contractData.setBitWithMask({
+            _bitToSet: StorageLib.IS_BURN_FROM_PAUSED_BIT_POSITION_,
+            _setBitToOne: _isPaused
+        });
+        _newContractData.sstoreImplementationSlotDataAsUint256();
+        emit SetIsBurnFromPaused({ isPaused: _isPaused });
+    }
+
     function setIsFreezingPaused(bool _isPaused) external {
         _requireSenderIsRole({ _role: PAUSER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
@@ -248,6 +259,10 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     /// @notice The ```SetIsMintPaused``` event is emitted when the isMintPaused state variable is updated
     /// @param isPaused The new value of the isMintPaused state variable
     event SetIsMintPaused(bool isPaused);
+
+    /// @notice The ```SetIsBurnFromPaused``` event is emitted when the isBurnFromPaused state variable is updated
+    /// @param isPaused The new value of the isBurnFromPaused state variable
+    event SetIsBurnFromPaused(bool isPaused);
 
     /// @notice The ```SetIsFreezingPaused``` event is emitted when the isFreezingPaused state variable is updated
     /// @param isPaused The new value of the isFreezingPaused state variable

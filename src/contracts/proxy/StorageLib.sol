@@ -216,20 +216,21 @@ library StorageLib {
     }
 
     // Contract Access Control masks
-    uint256 internal constant IS_MSG_SENDER_FROZEN_CHECK_ENABLED_BIT_POSITION_ = 1 << (255 - 0);
-    uint256 internal constant IS_MINT_PAUSED_BIT_POSITION_ = 1 << (255 - 1);
-    uint256 internal constant IS_FREEZING_PAUSED_BIT_POSITION_ = 1 << (255 - 2);
-    uint256 internal constant IS_TRANSFER_PAUSED_BIT_POSITION_ = 1 << (255 - 3);
-    uint256 internal constant IS_SIGNATURE_VERIFICATION_PAUSED_BIT_POSITION_ = 1 << (255 - 4);
+    uint256 internal constant IS_MSG_SENDER_FROZEN_CHECK_ENABLED_BIT_POSITION_ = 1 << (255 - 95);
+    uint256 internal constant IS_MINT_PAUSED_BIT_POSITION_ = 1 << (255 - 94);
+    uint256 internal constant IS_BURN_FROM_PAUSED_BIT_POSITION_ = 1 << (255 - 93);
+    uint256 internal constant IS_FREEZING_PAUSED_BIT_POSITION_ = 1 << (255 - 92);
+    uint256 internal constant IS_TRANSFER_PAUSED_BIT_POSITION_ = 1 << (255 - 91);
+    uint256 internal constant IS_SIGNATURE_VERIFICATION_PAUSED_BIT_POSITION_ = 1 << (255 - 90);
 
     // internal function upgrade masks
     // Erc20
-    uint256 internal constant IS_TRANSFER_UPGRADED_BIT_POSITION_ = 1 << (255 - 10);
-    uint256 internal constant IS_TRANSFER_FROM_UPGRADED_BIT_POSITION_ = 1 << (255 - 11);
+    uint256 internal constant IS_TRANSFER_UPGRADED_BIT_POSITION_ = 1 << (255 - 89);
+    uint256 internal constant IS_TRANSFER_FROM_UPGRADED_BIT_POSITION_ = 1 << (255 - 88);
 
     // Eip 3009
-    uint256 internal constant IS_TRANSFER_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 12);
-    uint256 internal constant IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 13);
+    uint256 internal constant IS_TRANSFER_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 87);
+    uint256 internal constant IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 86);
 
     //==============================================================================
     // Bitmask Functions
@@ -241,6 +242,10 @@ library StorageLib {
 
     function isMintPaused(uint256 _contractData) internal pure returns (bool) {
         return _contractData & IS_MINT_PAUSED_BIT_POSITION_ != 0;
+    }
+
+    function isBurnFromPaused(uint256 _contractData) internal pure returns (bool) {
+        return _contractData & IS_BURN_FROM_PAUSED_BIT_POSITION_ != 0;
     }
 
     function isFreezingPaused(uint256 _contractData) internal pure returns (bool) {
@@ -292,5 +297,6 @@ library StorageLib {
     error TransferPaused();
     error SignatureVerificationPaused();
     error MintPaused();
+    error BurnFromPaused();
     error FreezingPaused();
 }
