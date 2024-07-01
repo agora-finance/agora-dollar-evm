@@ -42,7 +42,7 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
         // Effects: add to totalSupply and account balances
         for (uint256 i = 0; i < _mints.length; i++) {
             // Checks: account cannot be 0 address
-            if (_mints[i].receiverAddress == address(0)) revert ERC20InvalidReceiver(address(0));
+            if (_mints[i].receiverAddress == address(0)) revert ERC20InvalidReceiver({ receiver: address(0) });
 
             // Effects: add to totalSupply and account balance
             uint248 _value248 = _mints[i].value.toUint248();
@@ -66,7 +66,7 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
 
     function batchBurnFrom(BatchBurnFromParam[] memory _burns) external {
         // Checks: sender must be burner
-        _requireSenderIsRole(BURNER_ROLE);
+        _requireSenderIsRole({ _role: BURNER_ROLE });
 
         // Checks: burnFrom must not be paused
         if (StorageLib.sloadImplementationSlotDataAsUint256().isBurnFromPaused()) revert StorageLib.BurnFromPaused();

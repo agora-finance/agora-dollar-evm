@@ -74,7 +74,8 @@ abstract contract Erc20Core is IErc20Errors {
 
         // We treat uint256.max as infinite allowance, so we don't need to read/write storage in that case
         if (_currentAllowance != type(uint256).max) {
-            if (_currentAllowance < _value) revert ERC20InsufficientAllowance(_spender, _currentAllowance, _value);
+            if (_currentAllowance < _value)
+                revert ERC20InsufficientAllowance({ spender: _spender, allowance: _currentAllowance, needed: _value });
             unchecked {
                 StorageLib.getPointerToErc20CoreStorage().accountAllowances[_owner][_spender] =
                     _currentAllowance -

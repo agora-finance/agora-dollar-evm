@@ -100,7 +100,7 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         bytes memory _signature
     ) internal {
         // Checks: authorization validity
-        if (_to != msg.sender) revert InvalidPayee(msg.sender, _to);
+        if (_to != msg.sender) revert InvalidPayee({ caller: msg.sender, payee: _to });
         if (block.timestamp <= _validAfter) revert InvalidAuthorization();
         if (block.timestamp >= _validBefore) revert ExpiredAuthorization();
         _requireUnusedAuthorization({ _authorizer: _from, _nonce: _nonce });
