@@ -43,6 +43,9 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     constructor(ConstructorParams memory _params) Eip712(_params.eip712Name, _params.eip712Version) {
         _name = _params.name.toShortString();
         _symbol = _params.symbol.toShortString();
+
+        // Prevent implementation from being initialized
+        _disableInitializers();
     }
 
     struct InitializeParams {
