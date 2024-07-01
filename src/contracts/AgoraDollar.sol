@@ -224,6 +224,10 @@ contract AgoraDollar is AgoraDollarCore {
         return StorageLib.sloadImplementationSlotDataAsUint256().isTransferWithAuthorizationUpgraded();
     }
 
+    function isReceiveWithAuthorizationUpgraded() external view returns (bool) {
+        return StorageLib.sloadImplementationSlotDataAsUint256().isReceiveWithAuthorizationUpgraded();
+    }
+
     function implementation() external view returns (address) {
         return StorageLib.sloadImplementationSlotDataAsUint256().implementation();
     }
@@ -246,6 +250,10 @@ contract AgoraDollar is AgoraDollarCore {
 
     function IS_TRANSFER_PAUSED_BIT_POSITION() external pure returns (uint256) {
         return StorageLib.IS_TRANSFER_PAUSED_BIT_POSITION_;
+    }
+
+    function IS_SIGNATURE_VERIFICATION_PAUSED_BIT_POSITION() external pure returns (uint256) {
+        return StorageLib.IS_SIGNATURE_VERIFICATION_PAUSED_BIT_POSITION_;
     }
 
     function IS_TRANSFER_UPGRADED_BIT_POSITION() external pure returns (uint256) {
