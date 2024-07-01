@@ -61,12 +61,6 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         bytes32 _nonce,
         bytes memory _signature
     ) internal {
-        // Checks: contract-wide access control
-        bool _isSignatureVerificationPaused = StorageLib
-            .sloadImplementationSlotDataAsUint256()
-            .isSignatureVerificationPaused();
-        if (_isSignatureVerificationPaused) revert StorageLib.SignatureVerificationPaused();
-
         // Checks: authorization validity
         if (block.timestamp <= _validAfter) revert InvalidAuthorization();
         if (block.timestamp >= _validBefore) revert ExpiredAuthorization();
@@ -105,12 +99,6 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         bytes32 _nonce,
         bytes memory _signature
     ) internal {
-        // Checks: contract-wide access control
-        bool _isSignatureVerificationPaused = StorageLib
-            .sloadImplementationSlotDataAsUint256()
-            .isSignatureVerificationPaused();
-        if (_isSignatureVerificationPaused) revert StorageLib.SignatureVerificationPaused();
-
         // Checks: authorization validity
         if (_to != msg.sender) revert InvalidPayee(msg.sender, _to);
         if (block.timestamp <= _validAfter) revert InvalidAuthorization();

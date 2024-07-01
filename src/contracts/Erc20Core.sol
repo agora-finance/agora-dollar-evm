@@ -31,10 +31,6 @@ abstract contract Erc20Core is IErc20Errors {
     }
 
     function _transfer(address _from, address _to, uint248 _transferValue) internal {
-        // Checks: contract-wide access control
-        bool _isTransferPaused = StorageLib.sloadImplementationSlotDataAsUint256().isTransferPaused();
-        if (_isTransferPaused) revert StorageLib.TransferPaused();
-
         // Checks: Ensure _from address is not frozen
         StorageLib.Erc20AccountData memory _accountDataFrom = StorageLib.getPointerToErc20CoreStorage().accountData[
             _from

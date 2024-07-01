@@ -117,6 +117,9 @@ contract AgoraDollarErc1967Proxy is Eip3009, Proxy {
             address _newImplementation = address(uint160(_contractData));
             _delegate({ implementation: _newImplementation });
         } else {
+            // Checks: contract-wide access control
+            if (_contractData.isTransferPaused()) revert StorageLib.TransferPaused();
+
             // Effects: Transfer the tokens
             _transfer({ _from: msg.sender, _to: _to, _transferValue: _transferValue.toUint248() });
             return true;
@@ -137,6 +140,9 @@ contract AgoraDollarErc1967Proxy is Eip3009, Proxy {
                 _isMsgSenderFrozenCheckEnabled &&
                 StorageLib.getPointerToErc20CoreStorage().accountData[msg.sender].isFrozen
             ) revert AccountIsFrozen({ frozenAccount: msg.sender });
+
+            // Checks: contract-wide access control
+            if (_contractData.isTransferPaused()) revert StorageLib.TransferPaused();
 
             // Effects: Decrease the allowance of the spender
             _spendAllowance({ _owner: _from, _spender: msg.sender, _value: _transferValue });
@@ -199,6 +205,10 @@ contract AgoraDollarErc1967Proxy is Eip3009, Proxy {
                 StorageLib.getPointerToErc20CoreStorage().accountData[msg.sender].isFrozen
             ) revert AccountIsFrozen({ frozenAccount: msg.sender });
 
+            // Checks: contract-wide access control
+            if (_contractData.isTransferPaused()) revert StorageLib.TransferPaused();
+            if (_contractData.isSignatureVerificationPaused()) revert StorageLib.SignatureVerificationPaused();
+
             // Effects: transfer the tokens
             _transferWithAuthorization({
                 _from: _from,
@@ -253,12 +263,9 @@ contract AgoraDollarErc1967Proxy is Eip3009, Proxy {
             address _newImplementation = address(uint160(_contractData));
             _delegate({ implementation: _newImplementation });
         } else {
-            // Reading account data for sender adds gas so we should only do it if set true
-            bool _isMsgSenderFrozenCheckEnabled = _contractData.isMsgSenderFrozenCheckEnabled();
-            if (
-                _isMsgSenderFrozenCheckEnabled &&
-                StorageLib.getPointerToErc20CoreStorage().accountData[msg.sender].isFrozen
-            ) revert AccountIsFrozen({ frozenAccount: msg.sender });
+            // Checks: contract-wide access control
+            if (_contractData.isTransferPaused()) revert StorageLib.TransferPaused();
+            if (_contractData.isSignatureVerificationPaused()) revert StorageLib.SignatureVerificationPaused();
 
             // Effects: transfer the tokens
             _receiveWithAuthorization({
