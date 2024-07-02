@@ -28,6 +28,7 @@ struct ConstructorParams {
     string symbol;
     string eip712Name;
     string eip712Version;
+    address proxyAddress;
 }
 
 contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
@@ -40,7 +41,9 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
 
     uint8 public immutable decimals = 6;
 
-    constructor(ConstructorParams memory _params) Eip712(_params.eip712Name, _params.eip712Version) {
+    constructor(
+        ConstructorParams memory _params
+    ) Eip712(_params.eip712Name, _params.eip712Version, _params.proxyAddress) {
         _name = _params.name.toShortString();
         _symbol = _params.symbol.toShortString();
 
@@ -48,12 +51,8 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
         _disableInitializers();
     }
 
-    struct InitializeParams {
-        address initialAdminAddress;
-    }
-
-    function initialize(InitializeParams memory _initializeParams) external reinitializer(1) {
-        _initializeAgoraDollarAccessControl({ _initialAdminAddress: _initializeParams.initialAdminAddress });
+    function initialize(address _initialAdminAddress) external reinitializer(1) {
+        _initializeAgoraDollarAccessControl({ _initialAdminAddress: _initialAdminAddress });
     }
 
     //==============================================================================

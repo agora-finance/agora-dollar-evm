@@ -26,7 +26,6 @@ import { StorageLib } from "./StorageLib.sol";
 import { ITransparentUpgradeableProxy } from "../interfaces/ITransparentUpgradeableProxy.sol";
 
 struct ConstructorParams {
-    address newImplementation;
     address proxyAdminOwnerAddress;
     string eip712Name;
     string eip712Version;
@@ -38,24 +37,15 @@ contract AgoraDollarErc1967Proxy is Eip3009, Proxy {
 
     address private immutable PROXY_ADMIN_ADDRESS;
 
-    constructor(ConstructorParams memory _params) payable Eip712(_params.eip712Name, _params.eip712Version) {
+    constructor(
+        ConstructorParams memory _params
+    ) payable Eip712(_params.eip712Name, _params.eip712Version, address(this)) {
         // Effects: Set the proxy admin address
         PROXY_ADMIN_ADDRESS = address(new AgoraProxyAdmin({ _initialOwner: _params.proxyAdminOwnerAddress }));
         StorageLib.getPointerToAgoraDollarErc1967ProxyAdminStorage().proxyAdminAddress = PROXY_ADMIN_ADDRESS;
 
         // Emit event
         emit AdminChanged({ previousAdmin: address(0), newAdmin: PROXY_ADMIN_ADDRESS });
-
-        // Generate calldata for initialization
-        AgoraDollar.InitializeParams memory _initializeParams = AgoraDollarCore.InitializeParams({
-            initialAdminAddress: _params.proxyAdminOwnerAddress
-        });
-        bytes memory _initializeCalldata = abi.encodeWithSelector(
-            AgoraDollarCore.initialize.selector,
-            _initializeParams
-        );
-
-        _upgradeToAndCall({ _newImplementation: _params.newImplementation, _callData: _initializeCalldata });
     }
 
     fallback() external payable override {
