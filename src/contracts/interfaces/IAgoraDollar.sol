@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.0;
 
 import { IAgoraDollarErc1967Proxy } from "./IAgoraDollarErc1967Proxy.sol";
 import { ITransparentUpgradeableProxy } from "./ITransparentUpgradeableProxy.sol";

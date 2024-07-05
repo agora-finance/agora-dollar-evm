@@ -15,7 +15,7 @@ remappings = [
     "interfaces/=src/contracts/interfaces/",
     "@openzeppelin/=node_modules/@openzeppelin/",
     "ds-test/=node_modules/ds-test/",
-    "forge-std/=node_modules/forge-std/",
+    "forge-std/=node_modules/forge-std/src/",
     "solady/=node_modules/solady/",
     "solidity-bytes-utils/=node_modules/solidity-bytes-utils/"
 ]

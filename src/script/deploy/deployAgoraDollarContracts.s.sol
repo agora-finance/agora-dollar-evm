@@ -10,14 +10,17 @@ function deployAgoraDollarImplementationWithArgs(
     string memory _name,
     string memory _symbol,
     string memory _eip712Name,
-    string memory _eip712Version
+    string memory _eip712Version,
+    address _proxyAddress
 ) returns (BaseScript.DeployReturn memory _return) {
     AgoraDollarParams memory _params = AgoraDollarParams({
         name: _name,
         symbol: _symbol,
         eip712Name: _eip712Name,
-        eip712Version: _eip712Version
+        eip712Version: _eip712Version,
+        proxyAddress: _proxyAddress
     });
+
     AgoraDollar _agoraDollar = new AgoraDollar(_params);
     _return = BaseScript.DeployReturn({
         contractAddress: address(_agoraDollar),
@@ -28,13 +31,11 @@ function deployAgoraDollarImplementationWithArgs(
 
 // Written as a free function to be consumed in testing and deployment scripts
 function deployAgoraDollarErc1967ProxyWithArgs(
-    address _implementationAddress,
     address _proxyAdminOwnerAddress,
     string memory _eip712Name,
     string memory _eip712Version
 ) returns (BaseScript.DeployReturn memory _return) {
     AgoraDollarErc1967ProxyParams memory _params = AgoraDollarErc1967ProxyParams({
-        newImplementation: _implementationAddress,
         proxyAdminOwnerAddress: _proxyAdminOwnerAddress,
         eip712Name: _eip712Name,
         eip712Version: _eip712Version
@@ -56,20 +57,20 @@ struct DeployAgoraDollarContractsReturn {
 function deployAgoraDollarContracts() returns (DeployAgoraDollarContractsReturn memory _return) {
     address INITIAL_ADMIN_ADDRESS = address(uint160(uint256(keccak256(bytes("ProxyAdminOwner")))));
 
+    // deploy Agora Dollar Erc1967 Proxy contract
+    BaseScript.DeployReturn memory _agoraDollarErc1967ProxyReturn = deployAgoraDollarErc1967ProxyWithArgs({
+        _proxyAdminOwnerAddress: INITIAL_ADMIN_ADDRESS,
+        _eip712Name: "AgoraDollar",
+        _eip712Version: "1"
+    });
+
     // deploy Agora Dollar implementation contract
     BaseScript.DeployReturn memory _agoraDollarImplementationReturn = deployAgoraDollarImplementationWithArgs({
         _name: "AgoraDollar",
         _symbol: "AUSD",
         _eip712Name: "AgoraDollar",
-        _eip712Version: "1"
-    });
-
-    // deploy Agora Dollar Erc1967 Proxy contract
-    BaseScript.DeployReturn memory _agoraDollarErc1967ProxyReturn = deployAgoraDollarErc1967ProxyWithArgs({
-        _implementationAddress: _agoraDollarImplementationReturn.contractAddress,
-        _proxyAdminOwnerAddress: INITIAL_ADMIN_ADDRESS,
-        _eip712Name: "AgoraDollar",
-        _eip712Version: "1"
+        _eip712Version: "1",
+        _proxyAddress: _agoraDollarErc1967ProxyReturn.contractAddress
     });
 
     _return = DeployAgoraDollarContractsReturn({

@@ -26,14 +26,18 @@ abstract contract Erc2612 is Eip712, Erc20Core {
     bytes32 public constant PERMIT_TYPEHASH =
         keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
 
-    /// @notice The ```permit``` function allows funds to be transferred without using a signature
-    /// @param _owner the account that signed the message
-    /// @param _spender the account that is allowed to spend the funds
-    /// @param _value the amount of funds that can be spent
-    /// @param _deadline the time by which the transaction must be completed
-    /// @param _v the v of the signature
-    /// @param _r the r of the signature
-    /// @param _s the s of the signature
+    //==============================================================================
+    // External Procedural Functions
+    //==============================================================================
+
+    /// @notice The ```permit``` function sets an allowance with a signature
+    /// @param _owner The account that signed the message
+    /// @param _spender The account that is allowed to spend the funds
+    /// @param _value The amount of funds that can be spent
+    /// @param _deadline The time by which the transaction must be completed
+    /// @param _v The v of the ECDSA signature
+    /// @param _r The r of the ECDSA signature
+    /// @param _s The s of the ECDSA signature
     function permit(
         address _owner,
         address _spender,
@@ -51,12 +55,12 @@ abstract contract Erc2612 is Eip712, Erc20Core {
             _signature: abi.encodePacked(_r, _s, _v)
         });
     }
-    /// @notice The ```permit``` function allows funds to be transferred without using a signature
-    /// @param _owner the account that signed the message
-    /// @param _spender the account that is allowed to spend the funds
-    /// @param _value the amount of funds that can be spent
-    /// @param _deadline the time by which the transaction must be completed
-    /// @param _signature the signature of the message
+    /// @notice The ```permit``` function sets an allowance with a signature
+    /// @param _owner The account that signed the message
+    /// @param _spender The account that is allowed to spend the funds
+    /// @param _value The amount of funds that can be spent
+    /// @param _deadline The time by which the transaction must be completed
+    /// @param _signature The signature of the message
 
     function permit(
         address _owner,
@@ -96,8 +100,7 @@ abstract contract Erc2612 is Eip712, Erc20Core {
     }
 
     /// @notice The ```DOMAIN_SEPARATOR``` function returns the configured domain separator
-    /// @dev This value can technically be updated, but it is not recommended
-    /// @return _domainSeparator the domain separator
+    /// @return _domainSeparator The domain separator
     // solhint-disable-next-line func-name-mixedcase
     function DOMAIN_SEPARATOR() external view returns (bytes32 _domainSeparator) {
         _domainSeparator = _domainSeparatorV4();

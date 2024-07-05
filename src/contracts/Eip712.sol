@@ -38,6 +38,9 @@ import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/Mes
  * https://docs.metamask.io/guide/signing-data.html[`eth_signTypedDataV4` in MetaMask].
  *
  */
+
+/// @title Eip712
+/// @author Agora, modified from OpenZeppelin implementation
 abstract contract Eip712 {
     using ShortStrings for *;
 
@@ -65,18 +68,20 @@ abstract contract Eip712 {
      * - `name`: the user readable name of the signing domain, i.e. the name of the DApp or the protocol.
      * - `version`: the current major version of the signing domain.
      */
-    constructor(string memory name, string memory version) {
+    constructor(string memory name, string memory version, address expectedProxyAddress) {
         _name = name.toShortString();
         _version = version.toShortString();
         _hashedName = keccak256(bytes(name));
         _hashedVersion = keccak256(bytes(version));
 
         _cachedChainId = block.chainid;
-        _cachedDomainSeparator = _buildDomainSeparator();
-        _cachedThis = address(this);
+        _cachedDomainSeparator = keccak256(
+            abi.encode(TYPE_HASH, _hashedName, _hashedVersion, block.chainid, expectedProxyAddress)
+        );
+        _cachedThis = expectedProxyAddress;
     }
 
-    /// @dev Returns the domain separator for the current chain.
+    /// @dev Returns the domain separator for the current chain
     function _domainSeparatorV4() internal view returns (bytes32) {
         if (address(this) == _cachedThis && block.chainid == _cachedChainId) return _cachedDomainSeparator;
         else return _buildDomainSeparator();
