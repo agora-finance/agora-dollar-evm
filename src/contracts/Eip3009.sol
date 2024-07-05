@@ -21,8 +21,9 @@ import { Erc20Core } from "./Erc20Core.sol";
 
 import { StorageLib } from "./proxy/StorageLib.sol";
 
-/// @title Eip-3009
-/// @notice Inspired by Circle's Eip3009 implementation, Contracts provide internal implementations for gas-abstracted transfers
+/// @title Eip3009
+/// @notice Eip3009 provides internal implementations for gas-abstracted transfers under Eip3009 guidelines
+/// @author Agora, inspired by Circle's Eip3009 implementation
 abstract contract Eip3009 is Eip712, Erc20Core {
     using SafeCastLib for uint256;
     using StorageLib for uint256;
@@ -43,15 +44,15 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     // Internal Procedural Functions
     //==============================================================================
 
-    /// @notice Execute a transfer with a signed authorization
-    /// @dev EOA wallet signatures should be packed in the order of r, s, v.
-    /// @param _from          Payer's address (Authorizer)
-    /// @param _to            Payee's address
-    /// @param _value         Amount to be transferred
-    /// @param _validAfter    The time after which this is valid (unix time)
-    /// @param _validBefore   The time before which this is valid (unix time)
-    /// @param _nonce         Unique nonce
-    /// @param _signature     Signature byte array produced by an EOA wallet or a contract wallet
+    /// @notice The ```_transferWithAuthorization``` function executes a transfer with a signed authorization
+    /// @dev EOA wallet signatures should be packed in the order of r, s, v
+    /// @param _from Payer's address (Authorizer)
+    /// @param _to Payee's address
+    /// @param _value Amount to be transferred
+    /// @param _validAfter The time after which this is valid (unix time)
+    /// @param _validBefore The time before which this is valid (unix time)
+    /// @param _nonce Unique nonce
+    /// @param _signature Signature byte array produced by an EOA wallet or a contract wallet
     function _transferWithAuthorization(
         address _from,
         address _to,
@@ -80,16 +81,16 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         _transfer({ _from: _from, _to: _to, _transferValue: _value.toUint248() });
     }
 
-    /// @notice Receive a transfer with a signed authorization from the payer
-    /// @dev This has an additional check to ensure that the payee's address matches the caller of this function to prevent front-running attacks.
-    /// @dev EOA wallet signatures should be packed in the order of r, s, v.
-    /// @param _from          Payer's address (Authorizer)
-    /// @param _to            Payee's address
-    /// @param _value         Amount to be transferred
-    /// @param _validAfter    The time after which this is valid (unix time)
-    /// @param _validBefore   The time before which this is valid (unix time)
-    /// @param _nonce         Unique nonce
-    /// @param _signature     Signature byte array produced by an EOA wallet or a contract wallet
+    /// @notice The ```_receiveWithAuthorization``` function receives a transfer with a signed authorization from the payer
+    /// @dev This has an additional check to ensure that the payee's address matches the caller of this function to prevent front-running attacks
+    /// @dev EOA wallet signatures should be packed in the order of r, s, v
+    /// @param _from Payer's address (Authorizer)
+    /// @param _to Payee's address
+    /// @param _value Amount to be transferred
+    /// @param _validAfter The block.timestamp after which the authorization is valid
+    /// @param _validBefore The block.timestamp before which the authorization is valid
+    /// @param _nonce Unique nonce
+    /// @param _signature Signature byte array produced by an EOA wallet or a contract wallet
     function _receiveWithAuthorization(
         address _from,
         address _to,
@@ -119,11 +120,11 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         _transfer({ _from: _from, _to: _to, _transferValue: _value.toUint248() });
     }
 
-    /// @notice Attempt to cancel an authorization
-    /// @dev EOA wallet signatures should be packed in the order of r, s, v.
-    /// @param _authorizer    Authorizer's address
-    /// @param _nonce         Nonce of the authorization
-    /// @param _signature     Signature byte array produced by an EOA wallet or a contract wallet
+    /// @notice The ```_cancelAuthorization``` function cancels an authorization
+    /// @dev EOA wallet signatures should be packed in the order of r, s, v
+    /// @param _authorizer Authorizer's address
+    /// @param _nonce Nonce of the authorization
+    /// @param _signature Signature byte array produced by an EOA wallet or a contract wallet
     function _cancelAuthorization(address _authorizer, bytes32 _nonce, bytes memory _signature) internal {
         _requireUnusedAuthorization({ _authorizer: _authorizer, _nonce: _nonce });
         _requireIsValidSignatureNow({
@@ -140,10 +141,10 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     // Internal Checks Functions
     //==============================================================================
 
-    /// @notice Validates that signature against input data struct
-    /// @param _signer        Signer's address
-    /// @param _dataHash      Hash of encoded data struct
-    /// @param _signature     Signature byte array produced by an EOA wallet or a contract wallet
+    /// @notice The ```_requireIsValidSignatureNow``` function validates that signature against input data struct
+    /// @param _signer Signer's address
+    /// @param _dataHash Hash of encoded data struct
+    /// @param _signature Signature byte array produced by an EOA wallet or a contract wallet
     function _requireIsValidSignatureNow(address _signer, bytes32 _dataHash, bytes memory _signature) private view {
         if (
             !SignatureCheckerLib.isValidSignatureNow({
@@ -157,7 +158,7 @@ abstract contract Eip3009 is Eip712, Erc20Core {
         ) revert InvalidSignature();
     }
 
-    /// @notice Check that an authorization is unused
+    /// @notice The ```_requireUnusedAuthorization``` checks that an authorization nonce is unused
     /// @param _authorizer    Authorizer's address
     /// @param _nonce         Nonce of the authorization
     function _requireUnusedAuthorization(address _authorizer, bytes32 _nonce) private view {
@@ -169,7 +170,7 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     // Internal Effects Functions
     //==============================================================================
 
-    /// @notice Mark an authorization as used
+    /// @notice The ```_markAuthorizationAsUsed``` function marks an authorization nonce as used
     /// @param _authorizer    Authorizer's address
     /// @param _nonce         Nonce of the authorization
     function _markAuthorizationAsUsed(address _authorizer, bytes32 _nonce) private {
@@ -182,13 +183,13 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     //==============================================================================
 
     /// @notice ```AuthorizationUsed``` event is emitted when an authorization is used
-    /// @param authorizer    Authorizer's address
-    /// @param nonce         Nonce of the authorization
+    /// @param authorizer Authorizer's address
+    /// @param nonce Nonce of the authorization
     event AuthorizationUsed(address indexed authorizer, bytes32 indexed nonce);
 
     /// @notice ```AuthorizationCanceled``` event is emitted when an authorization is canceled
-    /// @param authorizer    Authorizer's address
-    /// @param nonce         Nonce of the authorization
+    /// @param authorizer Authorizer's address
+    /// @param nonce Nonce of the authorization
     event AuthorizationCanceled(address indexed authorizer, bytes32 indexed nonce);
 
     //==============================================================================
@@ -196,8 +197,8 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     //==============================================================================
 
     /// @notice The ```InvalidPayee``` error is emitted when the payee does not match sender in receiveWithAuthorization
-    /// @param caller    The caller of the function
-    /// @param payee     The expected payee in the function
+    /// @param caller The caller of the function
+    /// @param payee The expected payee in the function
     error InvalidPayee(address caller, address payee);
 
     /// @notice The ```InvalidAuthorization``` error is emitted when the authorization is invalid because its too early

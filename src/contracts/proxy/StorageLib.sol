@@ -26,8 +26,11 @@ pragma solidity 0.8.21;
  * from above. Each struct is held in a unique namespace and has a unique storage slot.
  * See: https://eips.ethereum.org/EIPS/eip-7201 for additional information regarding this standard
  */
+/// @title StorageLib
+/// @dev Implements pure functions for calculating and accessing storage slots according to eip1967 and eip7201
+/// @author Agora
 library StorageLib {
-    // Global namespace for use in deriving storage slot locations
+    /// @notice Global namespace for use in deriving storage slot locations
     string internal constant GLOBAL_ERC7201_NAMESPACE = "AgoraDollarErc1967Proxy";
 
     // Use this function to check hardcoded bytes32 values against the expected formula
@@ -40,17 +43,23 @@ library StorageLib {
     // Eip3009 Storage Items
     //==============================================================================
 
+    /// @notice The EIP3009 namespace
     string internal constant EIP3009_NAMESPACE = "Eip3009Storage";
 
+    /// @notice The Eip3009Storage struct
+    /// @param isAuthorizationUsed A mapping of authorizer to nonce to boolean to indicate if the nonce has been used
     /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.Eip3009Storage
     struct Eip3009Storage {
         mapping(address _authorizer => mapping(bytes32 _nonce => bool _isNonceUsed)) isAuthorizationUsed;
     }
 
+    /// @notice The ```EIP3009_STORAGE_SLOT_``` is the storage slot for the Eip3009Storage struct
     /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.Eip3009Storage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant EIP3009_STORAGE_SLOT_ =
         0xbb0a37da742be2e3b68bdb11d195150f4243c03fb37d3cdfa756046082a38600;
 
+    /// @notice The ```getPointerToEip3009Storage``` function returns a pointer to the Eip3009Storage struct
+    /// @return $ A pointer to the Eip3009Storage struct
     function getPointerToEip3009Storage() internal pure returns (Eip3009Storage storage $) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -62,17 +71,23 @@ library StorageLib {
     // Erc2612 Storage Items
     //==============================================================================
 
+    /// @notice The Erc2612 namespace
     string internal constant ERC2612_NAMESPACE = "Erc2612Storage";
 
+    /// @notice The Erc2612Storage struct
+    /// @param nonces A mapping of signer address to uint256 to store the nonce
     /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.Erc2612Storage
     struct Erc2612Storage {
-        mapping(address => uint256) nonces;
+        mapping(address _signer => uint256 _nonce) nonces;
     }
 
+    /// @notice The ```ERC2612_STORAGE_SLOT_``` is the storage slot for the Erc2612Storage struct
     /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.Erc2612Storage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant ERC2612_STORAGE_SLOT_ =
         0x69e87f5b9323740fce20cdf574dacd1d10e756da64a1f2df70fd1ace4c7cc300;
 
+    /// @notice The ```getPointerToErc2612Storage``` function returns a pointer to the Erc2612Storage struct
+    /// @return $ A pointer to the Erc2612Storage struct
     function getPointerToErc2612Storage() internal pure returns (Erc2612Storage storage $) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -84,29 +99,41 @@ library StorageLib {
     // Erc20Core Storage Items
     //==============================================================================
 
+    /// @notice The Erc20Core namespace
     string internal constant ERC20_CORE_NAMESPACE = "Erc20CoreStorage";
 
+    /// @notice The Erc20AccountData struct
+    /// @param isFrozen A boolean to indicate if the account is frozen
+    /// @param balance A uint248 to store the balance of the account
     struct Erc20AccountData {
         bool isFrozen;
         uint248 balance;
     }
 
+    /// @notice The Erc20CoreStorage struct
+    /// @param accountData A mapping of address to Erc20AccountData to store account data
+    /// @param accountAllowances A mapping of owner to spender to uint256 to store the allowance
+    /// @param totalSupply A uint256 to store the total supply of tokens
     /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.Erc20CoreStorage
     struct Erc20CoreStorage {
-        /// @dev _account the account whose data we are accessing
-        /// @dev _accountData the account data for the account
+        /// @dev _account The account whose data we are accessing
+        /// @dev _accountData The account data for the account
         mapping(address _account => Erc20AccountData _accountData) accountData;
         /// @dev _owner The owner of the tokens
         /// @dev _spender The spender of the tokens
-        /// @dev _accountAllowance the allowance of the spender
+        /// @dev _accountAllowance The allowance of the spender
         mapping(address _owner => mapping(address _spender => uint256 _accountAllowance)) accountAllowances;
+        /// @dev The total supply of tokens
         uint256 totalSupply;
     }
 
+    /// @notice The ```ERC20_CORE_STORAGE_SLOT_``` is the storage slot for the Erc20CoreStorage struct
     /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.Erc20CoreStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant ERC20_CORE_STORAGE_SLOT_ =
         0x455730fed596673e69db1907be2e521374ba893f1a04cc5f5dd931616cd6b700;
 
+    /// @notice The ```getPointerToErc20CoreStorage``` function returns a pointer to the Erc20CoreStorage struct
+    /// @return $ A pointer to the Erc20CoreStorage struct
     function getPointerToErc20CoreStorage() internal pure returns (Erc20CoreStorage storage $) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -118,6 +145,7 @@ library StorageLib {
     // AgoraDollarAccessControl Storage Items
     //==============================================================================
 
+    /// @notice The AgoraDollarAccessControl namespace
     string internal constant AGORA_DOLLAR_ACCESS_CONTROL_NAMESPACE = "AgoraDollarAccessControlStorage";
 
     /// @notice The RoleData struct
@@ -128,16 +156,20 @@ library StorageLib {
         address currentRoleAddress;
     }
 
+    /// @notice The AgoraDollarAccessControlStorage struct
+    /// @param roleData A mapping of role identifier to AgoraDollarAccessControlRoleData to store role data
     /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.AgoraDollarAccessControlStorage
     struct AgoraDollarAccessControlStorage {
-        /// @dev _roleData the data for the role
         mapping(bytes32 _role => AgoraDollarAccessControlRoleData _roleData) roleData;
     }
 
+    /// @notice The ```AGORA_DOLLAR_ACCESS_CONTROL_STORAGE_SLOT_``` is the storage slot for the AgoraDollarAccessControlStorage struct
     /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.AgoraDollarAccessControlStorage")) - 1)) & ~bytes32(uint256(0xff))
     bytes32 internal constant AGORA_DOLLAR_ACCESS_CONTROL_STORAGE_SLOT_ =
         0x9d28e63f6379c0b2127b14120db65179caba9597ddafa73863de41a4ba1fe700;
 
+    /// @notice The ```getPointerToAgoraDollarAccessControlStorage``` function returns a pointer to the AgoraDollarAccessControlStorage struct
+    /// @return $ A pointer to the AgoraDollarAccessControlStorage struct
     function getPointerToAgoraDollarAccessControlStorage()
         internal
         pure
@@ -153,16 +185,21 @@ library StorageLib {
     // AgoraDollarErc1967 Admin Slot Items
     //==============================================================================
 
+    /// @notice The AgoraDollarErc1967ProxyAdminStorage struct
+    /// @param proxyAdminAddress The address of the proxy admin contract
     /// @custom:storage-location erc1967:eip1967.proxy.admin
     struct AgoraDollarErc1967ProxyAdminStorage {
         address proxyAdminAddress;
     }
 
-    // NOTE: deviates from erc7201 standard because erc1967 defines its own storage slot algorithm
+    /// @notice The ```AGORA_DOLLAR_ERC1967_PROXY_ADMIN_STORAGE_SLOT_``` is the storage slot for the AgoraDollarErc1967ProxyAdminStorage struct
+    /// @dev NOTE: deviates from erc7201 standard because erc1967 defines its own storage slot algorithm
     /// @dev bytes32(uint256(keccak256("eip1967.proxy.admin")) - 1)
     bytes32 internal constant AGORA_DOLLAR_ERC1967_PROXY_ADMIN_STORAGE_SLOT_ =
         0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
 
+    /// @notice The ```getPointerToAgoraDollarErc1967ProxyAdminStorage``` function returns a pointer to the AgoraDollarErc1967ProxyAdminStorage struct
+    /// @return adminSlot A pointer to the AgoraDollarErc1967ProxyAdminStorage struct
     function getPointerToAgoraDollarErc1967ProxyAdminStorage()
         internal
         pure
@@ -175,21 +212,25 @@ library StorageLib {
     }
 
     //==============================================================================
-    // AgoraDollarErc1967 Implementation Slot Items
+    // AgoraDollarErc1967Proxy Implementation Slot Items
     //==============================================================================
 
+    /// @notice The AgoraDollarErc1967ProxyContractStorage struct
+    /// @param implementationAddress The address of the implementation contract
+    /// @param placeholder A placeholder for bits to be used as bitmask items
     /// @custom:storage-location erc1967:eip1967.proxy.implementation
     struct AgoraDollarErc1967ProxyContractStorage {
         address implementationAddress; // least significant bits first
         uint96 placeholder; // Placeholder for bitmask items defined below
     }
 
+    /// @notice The ```AGORA_DOLLAR_ERC1967_PROXY_CONTRACT_STORAGE_SLOT_``` is the storage slot for the AgoraDollarErc1967ProxyContractStorage struct
     /// @dev bytes32(uint256(keccak256("eip1967.proxy.implementation")) - 1)
     bytes32 internal constant AGORA_DOLLAR_ERC1967_PROXY_CONTRACT_STORAGE_SLOT_ =
         0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
-    /// @notice The ```getPointerToAgoraDollarErc1967ProxyContractStorage``` function returns a pointer to the storage slot for the implementation address.
-    /// @return contractData The data in the storage slot for the implementation address and other data.
+    /// @notice The ```getPointerToAgoraDollarErc1967ProxyContractStorage``` function returns a pointer to the storage slot for the implementation address
+    /// @return contractData A pointer to the data in the storage slot for the implementation address and other contract data
     function getPointerToAgoraDollarErc1967ProxyContractStorage()
         internal
         pure
@@ -201,6 +242,9 @@ library StorageLib {
         }
     }
 
+    /// @notice The ```sloadImplementationSlotDataAsUint256``` function returns the data at the implementation slot as a uint256
+    /// @dev Named this way to draw attention to the sload call
+    /// @return _contractData The data at the implementation slot as a uint256
     function sloadImplementationSlotDataAsUint256() internal view returns (uint256 _contractData) {
         /// @solidity memory-safe-assembly
         assembly {
@@ -208,6 +252,9 @@ library StorageLib {
         }
     }
 
+    /// @notice The ```sstoreImplementationSlotDataAsUint256``` function stores the data at the implementation slot
+    /// @dev Named this way to draw attention to the sstore call
+    /// @param _contractData The data to store at the implementation slot, given as a uint256
     function sstoreImplementationSlotDataAsUint256(uint256 _contractData) internal {
         /// @solidity memory-safe-assembly
         assembly {
@@ -236,6 +283,7 @@ library StorageLib {
     // Bitmask Functions
     //==============================================================================
 
+    // These function use a bitmask to check if a specific bit is set in the contract data
     function isMsgSenderFrozenCheckEnabled(uint256 _contractData) internal pure returns (bool) {
         return _contractData & IS_MSG_SENDER_FROZEN_CHECK_ENABLED_BIT_POSITION_ != 0;
     }
@@ -294,9 +342,18 @@ library StorageLib {
     // Errors
     //==============================================================================
 
+    /// @notice The ```TransferPaused``` error is emitted when transfers are paused during an attempted transfer
     error TransferPaused();
+
+    /// @notice The ```SignatureVerificationPaused``` error is emitted when signature verification is paused during an attempted transfer
     error SignatureVerificationPaused();
+
+    /// @notice The ```MintPaused``` error is emitted when minting is paused during an attempted mint
     error MintPaused();
+
+    /// @notice The ```BurnFromPaused``` error is emitted when burning is paused during an attempted burn
     error BurnFromPaused();
+
+    /// @notice The ```FreezingPaused``` error is emitted when freezing is paused during an attempted call to freeze() or unfreeze()
     error FreezingPaused();
 }

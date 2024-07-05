@@ -38,6 +38,9 @@ import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/Mes
  * https://docs.metamask.io/guide/signing-data.html[`eth_signTypedDataV4` in MetaMask].
  *
  */
+
+/// @title Eip712
+/// @author Agora, modified from OpenZeppelin implementation
 abstract contract Eip712 {
     using ShortStrings for *;
 
@@ -78,7 +81,7 @@ abstract contract Eip712 {
         _cachedThis = expectedProxyAddress;
     }
 
-    /// @dev Returns the domain separator for the current chain.
+    /// @dev Returns the domain separator for the current chain
     function _domainSeparatorV4() internal view returns (bytes32) {
         if (address(this) == _cachedThis && block.chainid == _cachedChainId) return _cachedDomainSeparator;
         else return _buildDomainSeparator();

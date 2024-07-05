@@ -15,8 +15,8 @@ pragma solidity 0.8.21;
 import { StorageLib } from "./proxy/StorageLib.sol";
 
 /// @title AgoraDollarAccessControl
-/// @dev Inspired by FraxFinance's Timelock2Step contract which was inspired by OZ's Ownable2Step contract
-/// @notice  An abstract contract which contains 2-step transfer and renounce logic for a privileged roles
+/// @dev Inspired by Frax Finance's Timelock2Step contract which was inspired by OpenZeppelin's Ownable2Step contract
+/// @notice An abstract contract which contains 2-step transfer and renounce logic for a privileged roles
 abstract contract AgoraDollarAccessControl {
     /// @notice The ADMIN_ROLE identifier
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -49,7 +49,7 @@ abstract contract AgoraDollarAccessControl {
     }
 
     // ============================================================================================
-    // Functions: External Stateful Functions
+    // External Procedural Functions
     // ============================================================================================
 
     /// @notice The ```transferRole``` function initiates the role transfer
@@ -75,7 +75,7 @@ abstract contract AgoraDollarAccessControl {
     }
 
     // ============================================================================================
-    // Functions: Internal Effects
+    // Internal Effects Functions
     // ============================================================================================
 
     /// @notice The ```_transferRole``` function initiates the role transfer
@@ -119,7 +119,7 @@ abstract contract AgoraDollarAccessControl {
     }
 
     // ============================================================================================
-    // Functions: Internal Checks
+    // Internal Checks Functions
     // ============================================================================================
 
     /// @notice The ```_isRole``` function checks if _address is current role address
@@ -169,7 +169,7 @@ abstract contract AgoraDollarAccessControl {
     }
 
     // ============================================================================================
-    // Functions: Events
+    // Events
     // ============================================================================================
 
     /// @notice The ```RoleTransferStarted``` event is emitted when the role transfer is initiated
@@ -185,12 +185,14 @@ abstract contract AgoraDollarAccessControl {
     event RoleTransferred(bytes32 role, address indexed previousAddress, address indexed newAddress);
 
     // ============================================================================================
-    // Functions: Errors
+    // Errors
     // ============================================================================================
 
     /// @notice Emitted when role is transferred
+    /// @param role The role identifier
     error AddressIsNotRole(bytes32 role);
 
     /// @notice Emitted when pending role is transferred
+    /// @param role The role identifier
     error AddressIsNotPendingRole(bytes32 role);
 }
