@@ -63,7 +63,7 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     /// @notice The ```_initialAdminAddress``` initializes the AgoraDollarCore and inherited contracts
     /// @dev Has a modifier to prevent reinitialization
     /// @param _initialAdminAddress The initial admin address for role-based access control
-    function initialize(address _initialAdminAddress) external reinitializer(1) {
+    function initialize(address _initialAdminAddress) external reinitializer(2) {
         _initializeAgoraDollarAccessControl({ _initialAdminAddress: _initialAdminAddress });
     }
 
