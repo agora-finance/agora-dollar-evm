@@ -9,6 +9,3 @@
 
 ### Key Contracts and their inheritance
 ![Key Contracts and their inheritance](docs/images/ContractInheritance.jpg)
-
-### System Configuration
-![alt](docs/images/SystemConfiguration.jpg)
