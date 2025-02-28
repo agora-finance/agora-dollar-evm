@@ -20,7 +20,7 @@ ffi = false
 # Enables or disables the optimizer
 optimizer = false
 # The number of optimizer runs
-optimizer_runs = 200 
+optimizer_runs = 200
 # use the via-ir compiler flag
 via_ir = false
 # include metadata hash in bytecode
@@ -44,7 +44,7 @@ optimizer = false
 [profile.script]
 src = "_"
 test = "_"
-optimizer = false 
+optimizer = false
 
 [profile.deploy]
 src = "_"
@@ -76,6 +76,8 @@ override_spacing = false
 # ignore = ["src/contracts/openzeppelin-modified/*"]
 
 [rpc_endpoints]
+eth_mainnet = "${ETH_MAINNET_RPC}"
+eth_testnet = "${SEPOLIA_RPC_URL}"
 
 [etherscan]
 mainnet = { key = "${ETHERSCAN_API_KEY}", url = "${ETHERSCAN_API_URL}" }
