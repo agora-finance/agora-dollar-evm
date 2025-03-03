@@ -13,7 +13,7 @@ import { AgoraConstants } from "./AgoraConstants.sol";
 /* solhint-disable no-console, reason-string*/
 contract DeployAusd is Script {
     // address private constant AUSD_TOKEN = 0xa9012a055bd4e0eDfF8Ce09f960291C09D5322dC;
-    uint256 private constant DEPLOYMENT_VERSION = 2;
+    uint256 private constant DEPLOYMENT_VERSION = 3;
 
     function _computeSalt(bytes memory _identifier, uint256 version) internal pure returns (bytes32) {
         uint256 saltBase = (uint256(keccak256(_identifier)) - 1) & 0xffffffff0000;
