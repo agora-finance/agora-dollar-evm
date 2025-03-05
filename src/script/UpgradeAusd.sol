@@ -19,15 +19,15 @@ contract UpgradeAusd is Script {
     function run() public {
         vm.startBroadcast(AgoraConstants.PROXY_ADMIN_OWNER);
 
-        // Calls `initialize` with the `ProxyAdminOwner` as `address`
-        bytes memory _ausdInitData = abi.encodeWithSignature("initialize(address)", AgoraConstants.PROXY_ADMIN_OWNER);
+        // // Calls `initialize` with the `ProxyAdminOwner` as `address`
+        // bytes memory _ausdInitData = abi.encodeWithSignature("initialize(address)", AgoraConstants.PROXY_ADMIN_OWNER);
 
-        // Updates the proxy to the ausd implementation
-        _ausdProxyAdmin.upgradeAndCall({
-            proxy: AgoraConstants.AUSD_PROXY,
-            implementation: AgoraConstants.AUSD_IMPL,
-            data: _ausdInitData
-        });
+        // // Updates the proxy to the ausd implementation
+        // _ausdProxyAdmin.upgradeAndCall({
+        //     proxy: AgoraConstants.AUSD_PROXY,
+        //     implementation: AgoraConstants.AUSD_IMPL,
+        //     data: _ausdInitData
+        // });
 
         IAgoraDollar _ausd = IAgoraDollar(AgoraConstants.AUSD_PROXY);
 

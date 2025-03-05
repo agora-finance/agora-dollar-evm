@@ -14,7 +14,7 @@ set -euo pipefail
 # source .env
 source run/print-highlighted.sh
 export FOUNDRY_PROFILE=deploy
-export LOCAL_RPC_URL="http://127.0.0.1:8545/aa608dec-bae0-4ee8-b8d0-8b7b7b47a84b"
+export LOCAL_RPC_URL="http://127.0.0.1:8545/owner/aa608dec-bae0-4ee8-b8d0-8b7b7b47a84b"
 export PROXY_ADMIN_OWNER="0x99B0E95Fa8F5C3b86e4d78ED715B475cFCcf6E97"
 
 # Set `--prod` for production mode, else testing

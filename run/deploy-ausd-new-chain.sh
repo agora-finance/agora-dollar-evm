@@ -1,29 +1,19 @@
 #!/bin/bash
 set -euo pipefail
 
-# SETUP:
-# * Ensure that the Local RPC is running with the vars from the .env file:
-#   * correct FIREBLOCKS_CHAIN_ID
-#   * correct FORDEFI_ADDRESS (`AUSD_PROXY_DEPLOYER``)
-#   * valid FORDEFI_RPC_URL for the target chain.
-#
-# * Ensure the following too:
-#   * the `AUSD_PROXY_DEPLOYER` Fordefi account has gas tokens.
-#   * the CREATEX address is available on the target chain
-
 # Load environment variables
 source .env
 source run/print-highlighted.sh
 export FOUNDRY_PROFILE=deploy
-export LOCAL_RPC_URL="http://127.0.0.1:8545/aa608dec-bae0-4ee8-b8d0-8b7b7b47a84b"
+export LOCAL_RPC_URL="http://127.0.0.1:8545/deployer/aa608dec-bae0-4ee8-b8d0-8b7b7b47a84b"
 export AUSD_PROXY_DEPLOYER="0xb53DE4376284C74Ed70Edcb9DaF7256942153FBc"
-export VERIFIER_URL='https://api.routescan.io/v2/network/testnet/evm/43113/etherscan'
-export ETHERSCAN_API_KEY="lgwIK6hptVWZAYKOlaxfUg9IBIYc_lC1"
+# export VERIFIER_URL='https://api.routescan.io/v2/network/testnet/evm/43113/etherscan'
+# export ETHERSCAN_API_KEY="lgwIK6hptVWZAYKOlaxfUg9IBIYc_lC1"
 export OUTPUT_FILE="test_ausd_deployment.txt"
 
 # Set `--prod` for production mode, else testing
 if [[ " $@ " == *" --prod "* ]]; then
-    PROD_FLAGS="--broadcast --unlocked --slow --verifier-url $VERIFIER_URL --etherscan-api-key $ETHERSCAN_API_KEY"
+    PROD_FLAGS="--broadcast --unlocked --slow"
     echo "Production mode: extra flags enabled ($PROD_FLAGS)"
 else
     PROD_FLAGS=""

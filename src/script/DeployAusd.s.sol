@@ -32,12 +32,12 @@ contract DeployAusd is Script {
         // Gets the creation code
         bytes memory _creationCode = abi.encodePacked(type(AgoraDollarErc1967Proxy).creationCode, _constructorArgs);
 
-        bytes32 _saltAusdProxy = _computeSalt("TEST_AgoraDollarProxy", DEPLOYMENT_VERSION);
+        // bytes32 _saltAusdProxy = _computeSalt("TEST_AgoraDollarProxy", DEPLOYMENT_VERSION);
 
         // Deploys the AUSD proxy at the expected address
         _ausdProxyAddress = ICreateX(AgoraConstants.CREATEX_ADDRESS).deployCreate2({
-            // salt: 0xb53de4376284c74ed70edcb9daf7256942153fbc00d30bc9da6e697c02b4cf97, // predefined salt to get the ausd address
-            salt: _saltAusdProxy,
+            salt: 0xb53de4376284c74ed70edcb9daf7256942153fbc00d30bc9da6e697c02b4cf97, // predefined salt to get the ausd address
+            // salt: _saltAusdProxy,
             initCode: _creationCode
         });
 
@@ -51,7 +51,7 @@ contract DeployAusd is Script {
         bytes memory _ausdCreationCode = abi.encodePacked(type(AgoraDollar).creationCode, _constructorArgs);
 
         // Gets a new salt
-        bytes32 _saltAusdImplementation = _computeSalt("TEST_AgoraDollar", DEPLOYMENT_VERSION);
+        bytes32 _saltAusdImplementation = _computeSalt("AgoraDollar", DEPLOYMENT_VERSION);
 
         // Deploys the AUSD token implementation
         address _ausdImplementationAddress = ICreateX(AgoraConstants.CREATEX_ADDRESS).deployCreate2({
@@ -74,8 +74,8 @@ contract DeployAusd is Script {
         bytes memory _proxyConstructorParams = abi.encode(
             AgoraDollarErc1967ProxyParams({
                 proxyAdminOwnerAddress: AgoraConstants.PROXY_ADMIN_OWNER,
-                // eip712Name: "Agora Dollar",
-                eip712Name: "Test Dollar",
+                eip712Name: "Agora Dollar",
+                // eip712Name: "Test Dollar",
                 eip712Version: "1"
             })
         );
@@ -86,12 +86,12 @@ contract DeployAusd is Script {
         // AUSD implementation Params
         bytes memory _implementationConstructorParams = abi.encode(
             AgoraDollarParams({
-                name: "TST",
-                symbol: "TST",
-                eip712Name: "Dirmes Dollar",
-                // name: "AUSD",
-                // symbol: "AUSD",
-                // eip712Name: "Agora Dollar",
+                // name: "TST",
+                // symbol: "TST",
+                // eip712Name: "Dirmes Dollar",
+                name: "AUSD",
+                symbol: "AUSD",
+                eip712Name: "Agora Dollar",
                 eip712Version: "1",
                 proxyAddress: _ausdProxyAddress
             })
