@@ -6,15 +6,17 @@ source .env
 source run/print-highlighted.sh
 export FOUNDRY_PROFILE=deploy
 # export RPC_URL="https://rpc-amoy.polygon.technology/"
-export RPC_URL="https://testnet-rpc2.monad.xyz/52227f026fa8fac9e2014c58fbf5643369b3bfc6"
+# export RPC_URL="https://testnet-rpc2.monad.xyz/52227f026fa8fac9e2014c58fbf5643369b3bfc6"
 # export RPC_URL="https://ava-testnet.public.blastapi.io/ext/bc/C/rpc"
 # export RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
 # export EXPLORER_API_KEY="PAA4H13U39N9KPY2YES3UXRBUZ6NY84MS9" # ETH
 # export EXPLORER_API_KEY="DZUJIDPM6NSEXVMD719UHEN3P5YPYV8NX3" # AVAX
 # export EXPLORER_API_KEY="DWK15KDFDXVQBYRSV5HWKG76TVFXDHDIBR" # ARB
 # export EXPLORER_API_KEY="XFFIN7ITQGYEN74PU8RQSPARKGBHB8E8N7" # POS
+export RPC_URL="https://sepolia.optimism.io"
+export EXPLORER_API_KEY="I124XHV49G1JWY4ABNQBIHW4WX13S6Z33S" # OP
 
-JSON_FILE="run/contracts.json"
+JSON_FILE="run/contracts-test.json"
 
 # Loop through each contract entry in the JSON file
 jq -c '.[]' "$JSON_FILE" | while read -r row; do
