@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: ISC
 pragma solidity >=0.8.0;
 
-library AUSDConstants {
+library AusdConstants {
     // // These Address must be fetched from the explorer afaict.
     // address internal constant AUSD_PROXY_ADMIN = 0x2fFb5584C3C8AD18B3fc8872B91AA49a2aC8d169;
     // // These are our expected deployment addresses based on the salt.

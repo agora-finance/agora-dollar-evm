@@ -13,17 +13,22 @@ Script ran successfully.
 
 ==========================
 
-Chain 11155420
+Chain 129399
 
-Estimated gas price: 0.001000502 gwei
+Estimated gas price: 0.000000503 gwei
 
 Estimated total gas used for script: 8324273
 
-Estimated amount required: 0.000008328451785046 ETH
+Estimated amount required: 0.000000004187109319 ETH
 
 ==========================
 
-Transactions saved to: /Users/jordi/workspace/evm-deployments/agora-dollar-evm/broadcast/DeployAusd.s.sol/11155420/run-latest.json
 
-Sensitive values saved to: /Users/jordi/workspace/evm-deployments/agora-dollar-evm/cache/DeployAusd.s.sol/11155420/run-latest.json
+==========================
+
+ONCHAIN EXECUTION COMPLETE & SUCCESSFUL.
+
+Transactions saved to: /Users/jordi/workspace/evm-deployments/agora-dollar-evm/broadcast/DeployAusd.s.sol/129399/run-latest.json
+
+Sensitive values saved to: /Users/jordi/workspace/evm-deployments/agora-dollar-evm/cache/DeployAusd.s.sol/129399/run-latest.json
 

@@ -8,7 +8,7 @@ import { AgoraDollar, ConstructorParams as AgoraDollarParams } from "contracts/A
 import { AgoraDollarErc1967Proxy, ConstructorParams as AgoraDollarErc1967ProxyParams } from "contracts/proxy/AgoraDollarErc1967Proxy.sol";
 import { ICreateX } from "node_modules/createx/src/ICreateX.sol";
 
-import { AgoraConstants } from "./AgoraConstants.sol";
+import { AusdConstants } from "./AusdConstants.sol";
 
 /* solhint-disable no-console, reason-string*/
 
@@ -26,7 +26,7 @@ contract DeployAusd is Script {
         uint256 saltCombined = saltBase + version;
         bytes32 _salt = bytes32(
             abi.encodePacked(
-                AgoraConstants.PROXY_ADMIN_OWNER,
+                AusdConstants.PROXY_ADMIN_OWNER,
                 hex"00", // no cross-chain redeploy protection
                 bytes11(uint88(saltCombined)) // this is associated with the number of contracts we've deployed
             )
@@ -44,7 +44,7 @@ contract DeployAusd is Script {
         bytes32 _saltAusdProxy = _computeSalt("TEST_AgoraDollarProxy", DEPLOYMENT_VERSION);
 
         // Deploys the AUSD proxy at the expected address
-        _ausdProxyAddress = ICreateX(AgoraConstants.CREATEX_ADDRESS).deployCreate2({
+        _ausdProxyAddress = ICreateX(AusdConstants.CREATEX_ADDRESS).deployCreate2({
             // salt: 0xb53de4376284c74ed70edcb9daf7256942153fbc00d30bc9da6e697c02b4cf97, // predefined salt to get the ausd address
             salt: _saltAusdProxy,
             initCode: _creationCode
@@ -65,7 +65,7 @@ contract DeployAusd is Script {
         bytes32 _saltAusdImplementation = _computeSalt("TEST_AgoraDollar", DEPLOYMENT_VERSION);
 
         // Deploys the AUSD token implementation
-        address _ausdImplementationAddress = ICreateX(AgoraConstants.CREATEX_ADDRESS).deployCreate2({
+        address _ausdImplementationAddress = ICreateX(AusdConstants.CREATEX_ADDRESS).deployCreate2({
             salt: _saltAusdImplementation,
             initCode: _ausdCreationCode
         });
@@ -78,14 +78,14 @@ contract DeployAusd is Script {
     /// @notice Deploys the AgoraDollar Implementation and AgoraDollarErc1967Proxy
     function run() public broadcaster {
         require(
-            AgoraConstants.AUSD_PROXY_DEPLOYER == msg.sender,
+            AusdConstants.AUSD_PROXY_DEPLOYER == msg.sender,
             "Deploy: Only the deployer can deploy the proxy admin, add the `--sender` flag to the command"
         );
 
         // AgoraDollarErc1967Proxy Params
         bytes memory _proxyConstructorParams = abi.encode(
             AgoraDollarErc1967ProxyParams({
-                proxyAdminOwnerAddress: AgoraConstants.PROXY_ADMIN_OWNER,
+                proxyAdminOwnerAddress: AusdConstants.PROXY_ADMIN_OWNER,
                 // eip712Name: "Agora Dollar",
                 eip712Name: "Test Dollar",
                 eip712Version: "1"
@@ -114,7 +114,7 @@ contract DeployAusd is Script {
     }
 
     modifier broadcaster() {
-        vm.startBroadcast(AgoraConstants.AUSD_PROXY_DEPLOYER);
+        vm.startBroadcast(AusdConstants.AUSD_PROXY_DEPLOYER);
         _;
         vm.stopBroadcast();
     }
