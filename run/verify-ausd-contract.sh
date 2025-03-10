@@ -13,10 +13,12 @@ export FOUNDRY_PROFILE=deploy
 # export EXPLORER_API_KEY="DZUJIDPM6NSEXVMD719UHEN3P5YPYV8NX3" # AVAX
 # export EXPLORER_API_KEY="DWK15KDFDXVQBYRSV5HWKG76TVFXDHDIBR" # ARB
 # export EXPLORER_API_KEY="XFFIN7ITQGYEN74PU8RQSPARKGBHB8E8N7" # POS
-export RPC_URL="https://sepolia.optimism.io"
-export EXPLORER_API_KEY="I124XHV49G1JWY4ABNQBIHW4WX13S6Z33S" # OP
+# export RPC_URL="https://sepolia.optimism.io"
+# export EXPLORER_API_KEY="I124XHV49G1JWY4ABNQBIHW4WX13S6Z33S" # OP
+export RPC_URL="https://sepolia.base.org"
+export EXPLORER_API_KEY="N9SVE6ZWKBAKZUN56NZ9WVQB6Q4S4YTN62"
 
-JSON_FILE="run/contracts-test.json"
+JSON_FILE="run/contracts.json"
 
 # Loop through each contract entry in the JSON file
 jq -c '.[]' "$JSON_FILE" | while read -r row; do
