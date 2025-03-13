@@ -2,25 +2,28 @@
 set -euo pipefail
 
 # Ensure the following environment variables are set before running the script:
-source .env
+source ../.env # loading the .env file from the root directory
 source run/print-highlighted.sh
 export FOUNDRY_PROFILE=deploy
-# export RPC_URL="https://testnet-rpc2.monad.xyz/52227f026fa8fac9e2014c58fbf5643369b3bfc6"
-# export EXPLORER_API_KEY="PAA4H13U39N9KPY2YES3UXRBUZ6NY84MS9" # ETH
-# export RPC_URL="https://ava-testnet.public.blastapi.io/ext/bc/C/rpc"
-# export EXPLORER_API_KEY="DZUJIDPM6NSEXVMD719UHEN3P5YPYV8NX3" # AVAX
-# export RPC_URL="https://sepolia-rollup.arbitrum.io/rpc"
-# export EXPLORER_API_KEY="DWK15KDFDXVQBYRSV5HWKG76TVFXDHDIBR" # ARB
-# export RPC_URL="https://rpc-amoy.polygon.technology/"
-# export EXPLORER_API_KEY="XFFIN7ITQGYEN74PU8RQSPARKGBHB8E8N7" # POS
-# export RPC_URL="https://optimism-sepolia.drpc.org"
-# export EXPLORER_API_KEY="I124XHV49G1JWY4ABNQBIHW4WX13S6Z33S" # OP
-# export RPC_URL="https://sepolia.base.org"
-# export EXPLORER_API_KEY="N9SVE6ZWKBAKZUN56NZ9WVQB6Q4S4YTN62" # BASE
-# export RPC_URL="https://bsc-testnet-dataseed.bnbchain.org"
-# export EXPLORER_API_KEY="KJZWXUUZE7HS9NNSIVA2D3D51R6GRHEETV" # BNB
 
 JSON_FILE="run/contracts.json"
+
+if [[ " $@ " == *" --etherscan "* ]]; then
+    if [[ -z "${EXPLORER_API_KEY}" ]]; then
+        echo "Error: EXPLORER_API_KEY is required and not set"
+        exit 1
+    fi
+    EXPLORER_FLAGS="-e $EXPLORER_API_KEY"
+else if [[ " $@ " == *" --blockscout "* ]]; then
+    if [[ -z "${VERIFIER_URL}" ]]; then
+        echo "Error: VERIFIER_URL is required and not set"
+        exit 1
+    fi
+    EXPLORER_FLAGS="--verifier blockscout --verifier-url '$VERIFIER_URL'"
+else
+    echo "Error: Explorer flag missing (use --etherscan or --blockscout)"
+    exit 1
+fi
 
 # Loop through each contract entry in the JSON file
 jq -c '.[]' "$JSON_FILE" | while read -r row; do
@@ -36,7 +39,7 @@ jq -c '.[]' "$JSON_FILE" | while read -r row; do
     forge verify-contract "$ADDRESS" "$SRCPATH" \
         --constructor-args "$CONSTRUCTOR_ARGS" \
         --rpc-url "$RPC_URL" \
-        -e "$EXPLORER_API_KEY" \
+        $EXPLORER_FLAGS \
         --compiler-version 0.8.21 \
         --watch
     print_highlighted "Verification successful: $NAME : $ADDRESS"
