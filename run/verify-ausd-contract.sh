@@ -16,7 +16,9 @@ export FOUNDRY_PROFILE=deploy
 # export RPC_URL="https://optimism-sepolia.drpc.org"
 # export EXPLORER_API_KEY="I124XHV49G1JWY4ABNQBIHW4WX13S6Z33S" # OP
 # export RPC_URL="https://sepolia.base.org"
-# export EXPLORER_API_KEY="N9SVE6ZWKBAKZUN56NZ9WVQB6Q4S4YTN62"
+# export EXPLORER_API_KEY="N9SVE6ZWKBAKZUN56NZ9WVQB6Q4S4YTN62" # BASE
+# export RPC_URL="https://bsc-testnet-dataseed.bnbchain.org"
+# export EXPLORER_API_KEY="KJZWXUUZE7HS9NNSIVA2D3D51R6GRHEETV" # BNB
 
 JSON_FILE="run/contracts.json"
 
