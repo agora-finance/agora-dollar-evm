@@ -24,14 +24,14 @@ contract UpgradeAusd is Script {
         vm.startBroadcast(AusdConstants.PROXY_ADMIN_OWNER);
 
         // Calls `initialize` with the `ProxyAdminOwner` as `address`
-        bytes memory _ausdInitData = abi.encodeWithSignature("initialize(address)", AusdConstants.PROXY_ADMIN_OWNER);
+        // bytes memory _ausdInitData = abi.encodeWithSignature("initialize(address)", AusdConstants.PROXY_ADMIN_OWNER);
 
-        // Updates the proxy to the ausd implementation
-        _ausdProxyAdmin.upgradeAndCall({
-            proxy: AusdConstants.AUSD_PROXY,
-            implementation: AusdConstants.AUSD_IMPL,
-            data: _ausdInitData
-        });
+        // // Updates the proxy to the ausd implementation
+        // _ausdProxyAdmin.upgradeAndCall({
+        //     proxy: AusdConstants.AUSD_PROXY,
+        //     implementation: AusdConstants.AUSD_IMPL,
+        //     data: _ausdInitData
+        // });
 
         IAgoraDollar _ausd = IAgoraDollar(AusdConstants.AUSD_PROXY);
 

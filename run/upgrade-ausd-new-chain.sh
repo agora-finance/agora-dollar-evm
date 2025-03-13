@@ -1,15 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-# SETUP:
-# * Ensure that the Local RPC is running with the vars from the .env file:
-#   * correct FIREBLOCKS_CHAIN_ID
-#   * correct FORDEFI_ADDRESS (`PROXY_ADMIN_OWNER`)
-#   * valid FORDEFI_RPC_URL for the target chain.
-#
-# * Ensure the following too:
-#   * the `PROXY_ADMIN_OWNER` Fordefi account has gas tokens.
-
 # Load environment variables
 # source .env
 source run/print-highlighted.sh
