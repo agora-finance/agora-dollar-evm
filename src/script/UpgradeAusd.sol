@@ -16,7 +16,6 @@ import { AusdConstants } from "../../src/script/AusdConstants.sol";
 /// @notice A contract for setting up AUSD to its desired initial state
 /// @author Agora
 contract UpgradeAusd is Script {
-    // * IMPORTANT: `PROXY_ADMIN_ADDRESS` needs to be fetched from the AUSD-Proxy tx on the explorer
     IAgoraProxyAdmin public _ausdProxyAdmin = IAgoraProxyAdmin(AusdConstants.AUSD_PROXY_ADMIN);
 
     /// @notice Initializes AUSD and transfers all roles to the ``PROXY_ADMIN_OWNER`` EOA

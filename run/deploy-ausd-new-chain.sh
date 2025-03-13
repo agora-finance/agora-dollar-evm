@@ -20,7 +20,7 @@ fi
 
 print_highlighted "Deploying AUSD..."
 forge script src/script/DeployAusd.s.sol:DeployAusd \
- --sender $AUSD_PROXY_DEPLOYER --rpc-url $LOCAL_RPC_URL $PROD_FLAGS | tee $OUTPUT_FILE
+ --sender $AUSD_PROXY_DEPLOYER --rpc-url $LOCAL_RPC_URL $PROD_FLAGS
 print_highlighted "AUSD Deployment Done"
 
 print_highlighted "Next Steps \n\t * Find the AUSD Proxy Admin Contract in the Explorer Tx \n\t * Cross-check Addresses on /src/script/AUSDConstants.sol"

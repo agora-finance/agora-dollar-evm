@@ -9,12 +9,12 @@ export FOUNDRY_PROFILE=deploy
 JSON_FILE="run/contracts.json"
 
 if [[ " $@ " == *" --etherscan "* ]]; then
-    if [[ -z "${EXPLORER_API_KEY}" ]]; then
+    if [[ -z "${EXPLORER_API_KEY}" ]]; then f
         echo "Error: EXPLORER_API_KEY is required and not set"
         exit 1
     fi
     EXPLORER_FLAGS="-e $EXPLORER_API_KEY"
-else if [[ " $@ " == *" --blockscout "* ]]; then
+elif [[ " $@ " == *" --blockscout "* ]]; then
     if [[ -z "${VERIFIER_URL}" ]]; then
         echo "Error: VERIFIER_URL is required and not set"
         exit 1
