@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // solhint-disable func-name-mixedcase
 // ====================================================================
@@ -37,6 +37,20 @@ struct ConstructorParams {
     address proxyAddress;
 }
 
+/// @notice The ```InitializeParams``` struct is used to initialize `AgoraDollarCore`
+/// @param initialAdminAddress The address of the initial admin
+/// @param initialMinterAddress The address of the initial minter
+/// @param initialBurnerAddress The address of the initial burner
+/// @param initialPauserAddress The address of the initial pauser
+/// @param initialFreezerAddress The address of the initial freezer
+struct InitializeParams {
+    address initialAdminAddress;
+    address initialMinterAddress;
+    address initialBurnerAddress;
+    address initialPauserAddress;
+    address initialFreezerAddress;
+}
+
 /// @title AgoraDollarCore
 /// @notice The AgoraDollarCore contract is the core implementation of the Agora Dollar token
 /// @author Agora
@@ -60,11 +74,17 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
         _disableInitializers();
     }
 
-    /// @notice The ```_initialAdminAddress``` initializes the AgoraDollarCore and inherited contracts
+    /// @notice The ```initialize``` function initializes the AgoraDollarCore and inherited contracts
     /// @dev Has a modifier to prevent reinitialization
-    /// @param _initialAdminAddress The initial admin address for role-based access control
-    function initialize(address _initialAdminAddress) external reinitializer(2) {
-        _initializeAgoraDollarAccessControl({ _initialAdminAddress: _initialAdminAddress });
+    /// @param _params The struct to define the initial addresses for role-based access control
+    function initialize(InitializeParams memory _params) external reinitializer(3) {
+        _initializeAgoraDollarAccessControl({
+            _initialAdminAddress: _params.initialAdminAddress,
+            _initialMinter: _params.initialMinterAddress,
+            _initialBurner: _params.initialBurnerAddress,
+            _initialPauser: _params.initialPauserAddress,
+            _initialFreezer: _params.initialFreezerAddress
+        });
     }
 
     //==============================================================================
@@ -173,7 +193,7 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     /// @notice The ```setIsMsgSenderCheckEnabled``` function sets the isMsgSenderCheckEnabled state variable
     /// @param _isEnabled The new value of the isMsgSenderCheckEnabled state variable
     function setIsMsgSenderCheckEnabled(bool _isEnabled) external {
-        _requireSenderIsRole({ _role: ADMIN_ROLE });
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
         uint256 _newContractData = _contractData.setBitWithMask({
             _bitToSet: StorageLib.IS_MSG_SENDER_FROZEN_CHECK_ENABLED_BIT_POSITION_,
@@ -248,10 +268,26 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
         emit SetIsSignatureVerificationPaused({ isPaused: _isPaused });
     }
 
+    /// @notice The ```setIsBridgingPaused``` function sets the isBridgingPaused state variable
+    /// @dev Enabling this flag prevents minting or burning from `BRIDGE_MINTER|BURNER_ROLE`
+    /// @param _isPaused The new value of the isBridgingPaused state variable
+    function setIsBridgingPaused(bool _isPaused) external {
+        _requireSenderIsRole({ _role: PAUSER_ROLE });
+        uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
+        uint256 _newContractData = _contractData.setBitWithMask({
+            _bitToSet: StorageLib.IS_BRIDGING_PAUSED_BIT_POSITION_,
+            _setBitToOne: _isPaused
+        });
+        _newContractData.sstoreImplementationSlotDataAsUint256();
+        emit SetIsBridgingPaused({ isPaused: _isPaused });
+    }
+
     /// @notice The ```setIsTransferUpgraded``` function sets the isTransferUpgraded state variable
+    /// @dev This flag forces the contract to use the implementation logic to call `transfer()`.
+    /// Ensure the implementation defines the `transfer()` function before setting this to true.
     /// @param _isUpgraded The new value of the isTransferUpgraded state variable
     function setIsTransferUpgraded(bool _isUpgraded) external {
-        _requireSenderIsRole({ _role: ADMIN_ROLE });
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
         uint256 _newContractData = _contractData.setBitWithMask({
             _bitToSet: StorageLib.IS_TRANSFER_UPGRADED_BIT_POSITION_,
@@ -262,9 +298,11 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     }
 
     /// @notice The ```setIsTransferFromUpgraded``` function sets the isTransferFromUpgraded state variable
+    /// @dev This flag forces the contract to use the implementation logic to call `transferFrom()`.
+    /// Ensure the implementation defines the `transferFrom()` function before setting this to true.
     /// @param _isUpgraded The new value of the isTransferFromUpgraded state variable
     function setIsTransferFromUpgraded(bool _isUpgraded) external {
-        _requireSenderIsRole({ _role: ADMIN_ROLE });
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
         uint256 _newContractData = _contractData.setBitWithMask({
             _bitToSet: StorageLib.IS_TRANSFER_FROM_UPGRADED_BIT_POSITION_,
@@ -275,9 +313,11 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     }
 
     /// @notice The ```setIsTransferWithAuthorizationUpgraded``` function sets the isTransferWithAuthorizationUpgraded state variable
+    /// @dev This flag forces the contract to use the implementation logic to call `transferWithAuthorization()`.
+    /// Ensure the implementation defines the `transferWithAuthorization()` function before setting this to true.
     /// @param _isUpgraded The new value of the isTransferWithAuthorizationUpgraded state variable
     function setIsTransferWithAuthorizationUpgraded(bool _isUpgraded) external {
-        _requireSenderIsRole({ _role: ADMIN_ROLE });
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
         uint256 _newContractData = _contractData.setBitWithMask({
             _bitToSet: StorageLib.IS_TRANSFER_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_,
@@ -288,9 +328,11 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     }
 
     /// @notice The ```setIsReceiveWithAuthorizationUpgraded``` function sets the isReceiveWithAuthorizationUpgraded state variable
+    /// @dev This flag forces the contract to use the implementation logic to call `receiveWithAuthorization()`.
+    /// Ensure the implementation defines the `receiveWithAuthorization()` function before setting this to true.
     /// @param _isUpgraded The new value of the isReceiveWithAuthorizationUpgraded state variable
     function setIsReceiveWithAuthorizationUpgraded(bool _isUpgraded) external {
-        _requireSenderIsRole({ _role: ADMIN_ROLE });
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
         uint256 _contractData = StorageLib.sloadImplementationSlotDataAsUint256();
         uint256 _newContractData = _contractData.setBitWithMask({
             _bitToSet: StorageLib.IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_,
@@ -343,4 +385,8 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     /// @notice The ```SetIsReceiveWithAuthorizationUpgraded``` event is emitted when the isReceiveWithAuthorizationUpgraded state variable is updated
     /// @param isUpgraded The new value of the isReceiveWithAuthorizationUpgraded state variable
     event SetIsReceiveWithAuthorizationUpgraded(bool isUpgraded);
+
+    /// @notice The ```SetIsBridgingPaused``` event is emitted when the isBridgingPaused state variable is updated
+    /// @param isPaused The new value of the isBridgingPaused state variable
+    event SetIsBridgingPaused(bool isPaused);
 }

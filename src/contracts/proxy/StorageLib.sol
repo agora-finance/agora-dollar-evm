@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // ====================================================================
 //             _        ______     ___   _______          _
@@ -142,46 +142,6 @@ library StorageLib {
     }
 
     //==============================================================================
-    // AgoraDollarAccessControl Storage Items
-    //==============================================================================
-
-    /// @notice The AgoraDollarAccessControl namespace
-    string internal constant AGORA_DOLLAR_ACCESS_CONTROL_NAMESPACE = "AgoraDollarAccessControlStorage";
-
-    /// @notice The RoleData struct
-    /// @param pendingRoleAddress The address of the nominated (pending) role
-    /// @param currentRoleAddress The address of the current role
-    struct AgoraDollarAccessControlRoleData {
-        address pendingRoleAddress;
-        address currentRoleAddress;
-    }
-
-    /// @notice The AgoraDollarAccessControlStorage struct
-    /// @param roleData A mapping of role identifier to AgoraDollarAccessControlRoleData to store role data
-    /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.AgoraDollarAccessControlStorage
-    struct AgoraDollarAccessControlStorage {
-        mapping(bytes32 _role => AgoraDollarAccessControlRoleData _roleData) roleData;
-    }
-
-    /// @notice The ```AGORA_DOLLAR_ACCESS_CONTROL_STORAGE_SLOT_``` is the storage slot for the AgoraDollarAccessControlStorage struct
-    /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.AgoraDollarAccessControlStorage")) - 1)) & ~bytes32(uint256(0xff))
-    bytes32 internal constant AGORA_DOLLAR_ACCESS_CONTROL_STORAGE_SLOT_ =
-        0x9d28e63f6379c0b2127b14120db65179caba9597ddafa73863de41a4ba1fe700;
-
-    /// @notice The ```getPointerToAgoraDollarAccessControlStorage``` function returns a pointer to the AgoraDollarAccessControlStorage struct
-    /// @return $ A pointer to the AgoraDollarAccessControlStorage struct
-    function getPointerToAgoraDollarAccessControlStorage()
-        internal
-        pure
-        returns (AgoraDollarAccessControlStorage storage $)
-    {
-        /// @solidity memory-safe-assembly
-        assembly {
-            $.slot := AGORA_DOLLAR_ACCESS_CONTROL_STORAGE_SLOT_
-        }
-    }
-
-    //==============================================================================
     // AgoraDollarErc1967 Admin Slot Items
     //==============================================================================
 
@@ -279,6 +239,9 @@ library StorageLib {
     uint256 internal constant IS_TRANSFER_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 87);
     uint256 internal constant IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ = 1 << (255 - 86);
 
+    // Bridging
+    uint256 internal constant IS_BRIDGING_PAUSED_BIT_POSITION_ = 1 << (255 - 85);
+
     //==============================================================================
     // Bitmask Functions
     //==============================================================================
@@ -324,6 +287,10 @@ library StorageLib {
         return _contractData & IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_ != 0;
     }
 
+    function isBridgingPaused(uint256 _contractData) internal pure returns (bool) {
+        return _contractData & IS_BRIDGING_PAUSED_BIT_POSITION_ != 0;
+    }
+
     function implementation(uint256 _contractData) internal pure returns (address) {
         // return least significant 160 bits and cast to an address
         return address(uint160(_contractData));
@@ -356,4 +323,7 @@ library StorageLib {
 
     /// @notice The ```FreezingPaused``` error is emitted when freezing is paused during an attempted call to freeze() or unfreeze()
     error FreezingPaused();
+
+    /// @notice The ```BridgingPaused``` error is emitted when bridging is paused during an attempted bridge mint or burn
+    error BridgingPaused();
 }

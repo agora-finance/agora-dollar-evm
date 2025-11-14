@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // ====================================================================
 //             _        ______     ___   _______          _
@@ -12,187 +12,190 @@ pragma solidity 0.8.21;
 // ===================== AgoraDollarAccessControl =====================
 // ====================================================================
 
-import { StorageLib } from "./proxy/StorageLib.sol";
+import { AgoraAccessControl } from "agora-contracts/access-control/AgoraAccessControl.sol";
 
 /// @title AgoraDollarAccessControl
-/// @dev Inspired by Frax Finance's Timelock2Step contract which was inspired by OpenZeppelin's Ownable2Step contract
-/// @notice An abstract contract which contains 2-step transfer and renounce logic for a privileged roles
-abstract contract AgoraDollarAccessControl {
-    /// @notice The ADMIN_ROLE identifier
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-
+/// @notice An abstract contract that manages access control for the AgoraDollar contract
+/// @author Agora
+abstract contract AgoraDollarAccessControl is AgoraAccessControl {
     /// @notice The MINTER_ROLE identifier
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    string public constant MINTER_ROLE = "MINTER_ROLE";
 
     /// @notice The BURNER_ROLE identifier
-    bytes32 public constant BURNER_ROLE = keccak256("BURNER_ROLE");
+    string public constant BURNER_ROLE = "BURNER_ROLE";
 
     /// @notice The PAUSER_ROLE identifier
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
+    string public constant PAUSER_ROLE = "PAUSER_ROLE";
 
     /// @notice The FREEZER_ROLE identifier
-    bytes32 public constant FREEZER_ROLE = keccak256("FREEZER_ROLE");
+    string public constant FREEZER_ROLE = "FREEZER_ROLE";
 
-    /// @notice The RoleData struct
-    /// @param pendingRoleAddress The address of the nominated (pending) role
-    /// @param currentRoleAddress The address of the current role
-    struct RoleData {
-        address pendingRoleAddress;
-        address currentRoleAddress;
-    }
+    /// @notice The BRIDGE_MINTER_ROLE identifier
+    string public constant BRIDGE_MINTER_ROLE = "BRIDGE_MINTER_ROLE";
 
-    function _initializeAgoraDollarAccessControl(address _initialAdminAddress) internal {
-        StorageLib
-            .getPointerToAgoraDollarAccessControlStorage()
-            .roleData[ADMIN_ROLE]
-            .currentRoleAddress = _initialAdminAddress;
+    /// @notice The BRIDGE_BURNER_ROLE identifier
+    string public constant BRIDGE_BURNER_ROLE = "BRIDGE_BURNER_ROLE";
+
+    /// @notice The ```_initializeAgoraDollarAccessControl``` function initializes the AgoraDollarAccessControl contract
+    /// @dev This function adds the default roles that are required by the AgoraDollar contract
+    /// @param _initialAdminAddress The address of the initial `ACCESS_CONTROL_MANAGER_ROLE` holder
+    /// @param _initialMinter The address of the initial `MINTER_ROLE` holder
+    /// @param _initialBurner The address of the initial `BURNER_ROLE` holder
+    /// @param _initialPauser The address of the initial `PAUSER_ROLE` holder
+    /// @param _initialFreezer The address of the initial `FREEZER_ROLE` holder
+    function _initializeAgoraDollarAccessControl(
+        address _initialAdminAddress,
+        address _initialMinter,
+        address _initialBurner,
+        address _initialPauser,
+        address _initialFreezer
+    ) internal {
+        _initializeAgoraAccessControl({ _initialAdminAddress: _initialAdminAddress });
+
+        // setup the minter role
+        _addRoleToSet({ _role: MINTER_ROLE });
+        _assignRole({ _role: MINTER_ROLE, _member: _initialMinter, _addRole: true });
+
+        // setup the burner role
+        _addRoleToSet({ _role: BURNER_ROLE });
+        _assignRole({ _role: BURNER_ROLE, _member: _initialBurner, _addRole: true });
+
+        // setup the pauser role
+        _addRoleToSet({ _role: PAUSER_ROLE });
+        _assignRole({ _role: PAUSER_ROLE, _member: _initialPauser, _addRole: true });
+
+        // setup the freezer role
+        _addRoleToSet({ _role: FREEZER_ROLE });
+        _assignRole({ _role: FREEZER_ROLE, _member: _initialFreezer, _addRole: true });
+
+        // setup the bridge minter role
+        _addRoleToSet({ _role: BRIDGE_MINTER_ROLE });
+
+        // setup the bridge burner role
+        _addRoleToSet({ _role: BRIDGE_BURNER_ROLE });
     }
 
     // ============================================================================================
     // External Procedural Functions
     // ============================================================================================
 
-    /// @notice The ```transferRole``` function initiates the role transfer
-    /// @dev Must be called by the current role or the Admin
-    /// @param _newAddress The address of the nominated (pending) role
-    function transferRole(bytes32 _role, address _newAddress) external virtual {
-        // Checks: Only current role or Admin can transfer role
-        if (!(_isRole({ _role: _role, _address: msg.sender }) || _isRole({ _role: ADMIN_ROLE, _address: msg.sender })))
-            revert AddressIsNotRole({ role: _role });
+    /// @notice The ```grantMinterRole``` function grants `MINTER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantMinterRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
-        // Effects: update pendingRole
-        _setPendingRoleAddress({ _role: _role, _newAddress: _newAddress });
+        _assignRole({ _role: MINTER_ROLE, _member: _member, _addRole: true });
     }
 
-    /// @notice The ```acceptTransferRole``` function completes the role transfer
-    /// @dev Must be called by the pending role
-    function acceptTransferRole(bytes32 _role) external virtual {
-        // Checks
-        _requireSenderIsPendingRole({ _role: _role });
+    /// @notice The ```revokeMinterRole``` function revokes `MINTER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeMinterRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
-        // Effects update role address
-        _acceptTransferRole({ _role: _role });
+        _assignRole({ _role: MINTER_ROLE, _member: _member, _addRole: false });
     }
 
-    // ============================================================================================
-    // Internal Effects Functions
-    // ============================================================================================
+    /// @notice The ```grantBurnerRole``` function grants `BURNER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantBurnerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
-    /// @notice The ```_transferRole``` function initiates the role transfer
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role to transfer
-    /// @param _newAddress The address of the nominated (pending) role
-    function _setPendingRoleAddress(bytes32 _role, address _newAddress) internal {
-        StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_role].pendingRoleAddress = _newAddress;
-        emit RoleTransferStarted({
-            role: _role,
-            previousAddress: StorageLib
-                .getPointerToAgoraDollarAccessControlStorage()
-                .roleData[_role]
-                .currentRoleAddress,
-            newAddress: _newAddress
-        });
+        _assignRole({ _role: BURNER_ROLE, _member: _member, _addRole: true });
     }
 
-    /// @notice The ```_acceptTransferRole``` function completes the role transfer
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to transfer
-    function _acceptTransferRole(bytes32 _role) internal {
-        StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_role].pendingRoleAddress = address(0);
-        _setCurrentRoleAddress({ _role: _role, _newAddress: msg.sender });
+    /// @notice The ```revokeBurnerRole``` function revokes `BURNER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeBurnerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: BURNER_ROLE, _member: _member, _addRole: false });
     }
 
-    /// @notice The ```_setRole``` function sets the role address
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to transfer
-    /// @param _newAddress The address of the new role
-    function _setCurrentRoleAddress(bytes32 _role, address _newAddress) internal {
-        emit RoleTransferred({
-            role: _role,
-            previousAddress: StorageLib
-                .getPointerToAgoraDollarAccessControlStorage()
-                .roleData[_role]
-                .currentRoleAddress,
-            newAddress: _newAddress
-        });
-        StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_role].currentRoleAddress = _newAddress;
+    /// @notice The ```grantPauserRole``` function grants `PAUSER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantPauserRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: PAUSER_ROLE, _member: _member, _addRole: true });
     }
 
-    // ============================================================================================
-    // Internal Checks Functions
-    // ============================================================================================
+    /// @notice The ```revokePauserRole``` function revokes `PAUSER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokePauserRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
-    /// @notice The ```_isRole``` function checks if _address is current role address
-    /// @param _role The role identifier to check
-    /// @param _address The address to check against the role
-    /// @return Whether or not msg.sender is current role address
-    function _isRole(bytes32 _role, address _address) internal view returns (bool) {
-        return _address == StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_role].currentRoleAddress;
+        _assignRole({ _role: PAUSER_ROLE, _member: _member, _addRole: false });
     }
 
-    /// @notice The ```_requireIsRole``` function reverts if _address is not current role address
-    /// @param _role The role identifier to check
-    /// @param _address The address to check against the role
-    function _requireIsRole(bytes32 _role, address _address) internal view {
-        if (!_isRole({ _role: _role, _address: _address })) revert AddressIsNotRole({ role: _role });
+    /// @notice The ```grantFreezerRole``` function grants `FREEZER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantFreezerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: FREEZER_ROLE, _member: _member, _addRole: true });
     }
 
-    /// @notice The ```_requireSenderIsRole``` function reverts if msg.sender is not current role address
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to check
-    function _requireSenderIsRole(bytes32 _role) internal view {
-        _requireIsRole({ _role: _role, _address: msg.sender });
+    /// @notice The ```revokeFreezerRole``` function revokes `FREEZER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeFreezerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: FREEZER_ROLE, _member: _member, _addRole: false });
     }
 
-    /// @notice The ```_isPendingRole``` function checks if the _address is pending role address
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to check
-    /// @param _address The address to check against the pending role
-    /// @return Whether or not _address is pending role address
-    function _isPendingRole(bytes32 _role, address _address) internal view returns (bool) {
-        return _address == StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_role].pendingRoleAddress;
+    /// @notice The ```grantBridgeMinterRole``` function grants `BRIDGE_MINTER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantBridgeMinterRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: BRIDGE_MINTER_ROLE, _member: _member, _addRole: true });
     }
 
-    /// @notice The ```_requireIsPendingRole``` function reverts if the _address is not pending role address
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to check
-    /// @param _address The address to check against the pending role
-    function _requireIsPendingRole(bytes32 _role, address _address) internal view {
-        if (!_isPendingRole({ _role: _role, _address: _address })) revert AddressIsNotPendingRole({ role: _role });
+    /// @notice The ```revokeBridgeMinterRole``` function revokes `BRIDGE_MINTER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeBridgeMinterRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: BRIDGE_MINTER_ROLE, _member: _member, _addRole: false });
     }
 
-    /// @notice The ```_requirePendingRole``` function reverts if msg.sender is not pending role address
-    /// @dev This function is to be implemented by a public function
-    /// @param _role The role identifier to check
-    function _requireSenderIsPendingRole(bytes32 _role) internal view {
-        _requireIsPendingRole({ _role: _role, _address: msg.sender });
+    /// @notice The ```grantBridgeBurnerRole``` function grants `BRIDGE_BURNER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantBridgeBurnerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: BRIDGE_BURNER_ROLE, _member: _member, _addRole: true });
     }
 
-    // ============================================================================================
-    // Events
-    // ============================================================================================
+    /// @notice The ```revokeBridgeBurnerRole``` function revokes `BRIDGE_BURNER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeBridgeBurnerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
-    /// @notice The ```RoleTransferStarted``` event is emitted when the role transfer is initiated
-    /// @param role The bytes32 identifier of the role that is being transferred
-    /// @param previousAddress The address of the previous role
-    /// @param newAddress The address of the new role
-    event RoleTransferStarted(bytes32 role, address indexed previousAddress, address indexed newAddress);
-
-    /// @notice The ```RoleTransferred``` event is emitted when the role transfer is completed
-    /// @param role The bytes32 identifier of the role that was transferred
-    /// @param previousAddress The address of the previous role
-    /// @param newAddress The address of the new role
-    event RoleTransferred(bytes32 role, address indexed previousAddress, address indexed newAddress);
-
-    // ============================================================================================
-    // Errors
-    // ============================================================================================
-
-    /// @notice Emitted when role is transferred
-    /// @param role The role identifier
-    error AddressIsNotRole(bytes32 role);
-
-    /// @notice Emitted when pending role is transferred
-    /// @param role The role identifier
-    error AddressIsNotPendingRole(bytes32 role);
+        _assignRole({ _role: BRIDGE_BURNER_ROLE, _member: _member, _addRole: false });
+    }
 }
