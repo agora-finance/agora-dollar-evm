@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity >=0.8.0;
+pragma solidity ^0.8.4;
 
 interface ITransparentUpgradeableProxy {
-    function upgradeToAndCall(address, bytes calldata) external payable;
+    function upgradeToAndCall(address, bytes memory) external payable;
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity ^0.8.28;
 
 import { BaseScript } from "../BaseScript.sol";
 import { AgoraDollar, ConstructorParams as AgoraDollarParams } from "contracts/AgoraDollar.sol";
@@ -60,15 +60,15 @@ function deployAgoraDollarContracts() returns (DeployAgoraDollarContractsReturn 
     // deploy Agora Dollar Erc1967 Proxy contract
     BaseScript.DeployReturn memory _agoraDollarErc1967ProxyReturn = deployAgoraDollarErc1967ProxyWithArgs({
         _proxyAdminOwnerAddress: INITIAL_ADMIN_ADDRESS,
-        _eip712Name: "AgoraDollar",
+        _eip712Name: "Agora Dollar",
         _eip712Version: "1"
     });
 
     // deploy Agora Dollar implementation contract
     BaseScript.DeployReturn memory _agoraDollarImplementationReturn = deployAgoraDollarImplementationWithArgs({
-        _name: "AgoraDollar",
+        _name: "AUSD",
         _symbol: "AUSD",
-        _eip712Name: "AgoraDollar",
+        _eip712Name: "Agora Dollar",
         _eip712Version: "1",
         _proxyAddress: _agoraDollarErc1967ProxyReturn.contractAddress
     });

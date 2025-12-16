@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // ====================================================================
 //             _        ______     ___   _______          _
@@ -12,7 +12,8 @@ pragma solidity 0.8.21;
 // ============================ Erc20Core =============================
 // ====================================================================
 
-import { IERC20Errors as IErc20Errors } from "@openzeppelin/contracts/interfaces/draft-IErc6093.sol";
+import { IERC20Errors as IErc20Errors } from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
+
 import { SafeCastLib } from "solady/src/utils/SafeCastLib.sol";
 
 import { StorageLib } from "./proxy/StorageLib.sol";
@@ -49,12 +50,13 @@ abstract contract Erc20Core is IErc20Errors {
         if (_accountDataFrom.isFrozen) revert AccountIsFrozen({ frozenAccount: _from });
 
         // Checks: Ensure _from has enough balance
-        if (_accountDataFrom.balance < _transferValue)
+        if (_accountDataFrom.balance < _transferValue) {
             revert ERC20InsufficientBalance({
                 sender: _from,
                 balance: _accountDataFrom.balance,
                 needed: _transferValue
             });
+        }
 
         // Effects: update balances on the _from account
         unchecked {

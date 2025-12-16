@@ -1,4 +1,13 @@
+@eth-optimism/=lib/agora-standard-solidity/node_modules/@eth-optimism/
+@openzeppelin/=node_modules/@openzeppelin/
+agora-contracts/=node_modules/agora-contracts/src/contracts/
+agora-standard-solidity/=lib/agora-standard-solidity/src
+agora-std/=lib/agora-standard-solidity/src/
 contracts/=src/contracts/
-interfaces/=src/contracts/interfaces/
-forge-std/=node_modules/forge-std/src/
 ds-test/=node_modules/ds-test/src/
+forge-std/=node_modules/forge-std/src/
+interfaces/=src/contracts/interfaces/
+script/=src/script/
+solady/=node_modules/solady/
+solidity-bytes-utils/=lib/agora-standard-solidity/node_modules/solidity-bytes-utils/
+test/=src/test/

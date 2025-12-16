@@ -3,7 +3,7 @@
 // ***NOTE***: This file has been modified to remove external functions and storage for use in a transparent-ish proxy
 // ***NOTE***: Modified from https://github.com/OpenZeppelin/openzeppelin-contracts/blob/dbb6104ce834628e473d2173bbc9d47f81a9eec3/contracts/utils/cryptography/EIP712.sol
 
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // ====================================================================
 //             _        ______     ___   _______          _

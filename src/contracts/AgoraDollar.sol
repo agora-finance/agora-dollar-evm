@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity 0.8.21;
+pragma solidity 0.8.28;
 
 // ====================================================================
 //             _        ______     ___   _______          _
@@ -141,71 +141,40 @@ contract AgoraDollar is AgoraDollarCore {
     // External View Functions: AgoraDollarAccessControl
     //==============================================================================
 
-    /// @notice The ``` getRoleData``` function returns the role data for a given role
-    /// @param _roleId The role to get the data for
-    /// @return The role data for the given role
-    function getRoleData(bytes32 _roleId) external view returns (StorageLib.AgoraDollarAccessControlRoleData memory) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[_roleId];
+    /// @notice The ```getMinterRoleMembers``` function returns the addresses holding `MINTER_ROLE`
+    /// @return The array of addresses holding `MINTER_ROLE`
+    function getMinterRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(MINTER_ROLE);
     }
 
-    /// @notice The ```adminAddress``` function returns the address of the admin role
-    /// @return The address which holds the admin role
-    function adminAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[ADMIN_ROLE].currentRoleAddress;
+    /// @notice The ```getBurnerRoleMembers``` function returns the addresses holding `BURNER_ROLE`
+    /// @return The array of addresses holding `BURNER_ROLE`
+    function getBurnerRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(BURNER_ROLE);
     }
 
-    /// @notice The ```pendingAdminAddress``` function returns the pending address of the admin role
-    /// @return The pending address of the admin role
-    function pendingAdminAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[ADMIN_ROLE].pendingRoleAddress;
+    /// @notice The ```getPauserRoleMembers``` function returns the addresses holding `PAUSER_ROLE`
+    /// @return The array of addresses holding `PAUSER_ROLE`
+    function getPauserRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(PAUSER_ROLE);
     }
 
-    /// @notice The ```minterAddress``` function returns the address of the minter role
-    /// @return The address which holds the minter role
-    function minterAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[MINTER_ROLE].currentRoleAddress;
+    /// @notice The ```getFreezerRoleMembers``` function returns the addresses holding `FREEZER_ROLE`
+    /// @return The array of addresses holding `FREEZER_ROLE`
+    function getFreezerRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(FREEZER_ROLE);
     }
 
-    /// @notice The ```pendingMinterAddress``` function returns the pending address of the minter role
-    /// @return The pending address of the minter role
-    function pendingMinterAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[MINTER_ROLE].pendingRoleAddress;
+    /// @notice The ```getBridgeMinterRoleMembers``` function returns the addresses holding `BRIDGE_MINTER_ROLE`
+    /// @return The array of addresses holding `BRIDGE_MINTER_ROLE`
+    function getBridgeMinterRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(BRIDGE_MINTER_ROLE);
     }
 
-    /// @notice The ```burnerAddress``` function returns the address of the burner role
-    /// @return The address which holds the burner role
-    function burnerAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[BURNER_ROLE].currentRoleAddress;
-    }
-
-    /// @notice The ```pendingBurnerAddress``` function returns the pending address of the burner role
-    /// @return The pending address of the burner role
-    function pendingBurnerAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[BURNER_ROLE].pendingRoleAddress;
-    }
-
-    /// @notice The ```pauserAddress``` function returns the address of the pauser role
-    /// @return The address which holds the pauser role
-    function pauserAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[PAUSER_ROLE].currentRoleAddress;
-    }
-
-    /// @notice The ```pendingPauserAddress``` function returns the pending address of the pauser role
-    /// @return The pending address of the pauser role
-    function pendingPauserAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[PAUSER_ROLE].pendingRoleAddress;
-    }
-
-    /// @notice The ```freezerAddress``` function returns the address of the freezer role
-    /// @return The address which holds the freezer role
-    function freezerAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[FREEZER_ROLE].currentRoleAddress;
-    }
-
-    /// @notice The ```pendingFreezerAddress``` function returns the pending address of the freezer role
-    /// @return The pending address of the freezer role
-    function pendingFreezerAddress() external view returns (address) {
-        return StorageLib.getPointerToAgoraDollarAccessControlStorage().roleData[FREEZER_ROLE].pendingRoleAddress;
+    /// @notice The ```getBridgeBurnerRoleMembers``` function returns the addresses holding `BRIDGE_BURNER_ROLE`
+    /// @return The array of addresses holding `BRIDGE_BURNER_ROLE`
+    function getBridgeBurnerRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(BRIDGE_BURNER_ROLE);
     }
 
     //==============================================================================
@@ -307,6 +276,12 @@ contract AgoraDollar is AgoraDollarCore {
         return StorageLib.sloadImplementationSlotDataAsUint256().isReceiveWithAuthorizationUpgraded();
     }
 
+    /// @notice The ```isBridgingPaused``` function returns a boolean indicating if bridging is paused
+    /// @return A boolean indicating if bridging is paused
+    function isBridgingPaused() external view returns (bool) {
+        return StorageLib.sloadImplementationSlotDataAsUint256().isBridgingPaused();
+    }
+
     /// @notice The ```implementation``` function returns the address of the implementation contract
     /// @return The address of the implementation contract
     function implementation() external view returns (address) {
@@ -375,5 +350,25 @@ contract AgoraDollar is AgoraDollarCore {
     /// @return A uint256 with a single bit flipped to 1
     function IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION() external pure returns (uint256) {
         return StorageLib.IS_RECEIVE_WITH_AUTHORIZATION_UPGRADED_BIT_POSITION_;
+    }
+
+    //==============================================================================
+    // Version Functions
+    //==============================================================================
+
+    /// @notice The ```Version``` struct is used to represent the version of the AgoraDollar
+    /// @param major The major version number
+    /// @param minor The minor version number
+    /// @param patch The patch version number
+    struct Version {
+        uint256 major;
+        uint256 minor;
+        uint256 patch;
+    }
+
+    /// @notice The ```version``` function returns the version of the AgoraDollar
+    /// @return _version The version of the AgoraDollar
+    function version() public pure returns (Version memory _version) {
+        _version = Version({ major: 2, minor: 0, patch: 0 });
     }
 }
