@@ -4,7 +4,6 @@
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
 
-
 [profile.default]
 # The source directory
 src = 'src/contracts'
@@ -34,10 +33,16 @@ ignored_error_codes = [3628, 5574, 2018]
 evm_version = "cancun"
 solc_version = "0.8.28"
 
+[rpc_endpoints]
+eth_mainnet = "${ETH_MAINNET_RPC}"
+
+[etherscan]
+mainnet = { key = "${ETHERSCAN_API_KEY}", url = "${ETHERSCAN_API_URL}" }
+polygon = { key = "${POLYGONSCAN_API_KEY}", url = "${POLYGONSCAN_API_URL}" }
 
 [fuzz]
 # Amount of runs per fuzz test
-runs = 1024
+runs = 256
 
 [profile.src]
 test = "_"        # Makes building faster
@@ -53,22 +58,42 @@ optimizer = false
 src = "_"
 test = "_"
 optimizer = true
-optimizer_runs = 100_000_000
+optimizer_runs = 1_000_000_000
 via_ir = true
+
+[profile.coverage]
+src = "src/contracts"
+test = "src/test"
+script = "src/script"
+[profile.coverage.fuzz]
+runs = 64
 
 [profile.test]
 src = "_"
 script = "_"
 optimizer = false
 build_info = false
-extra_output = []
+# extra_output_files = ["evm.assembly"]
 verbosity = 3
 via_ir = false
+ffi = true
+
+[profile.test-fuzz]
+src = "_"
+script = "_"
+optimizer = true
+build_info = false
+# extra_output_files = ["evm.assembly"]
+verbosity = 3
+via_ir = true
+optimizer_runs = 1_000_000_000
+[profile.test-fuzz.fuzz]
+runs = 65536
 
 [fmt]
 single_line_statement_blocks = "single"
 multiline_func_header = "params_first"
-line_length = 1000                      # This gets overriden by prettier afterwards
+line_length = 120
 tab_width = 4
 bracket_spacing = true
 int_types = "long"
@@ -76,10 +101,3 @@ number_underscore = "thousands"
 sort_imports = true
 contract_new_lines = true
 override_spacing = false
-# ignore = ["src/contracts/openzeppelin-modified/*"]
-
-[rpc_endpoints]
-
-[etherscan]
-mainnet = { key = "${ETHERSCAN_API_KEY}", url = "${ETHERSCAN_API_URL}" }
-polygon = { key = "${POLYGONSCAN_API_KEY}", url = "${POLYGONSCAN_API_URL}" }

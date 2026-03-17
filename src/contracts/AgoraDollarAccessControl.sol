@@ -36,6 +36,9 @@ abstract contract AgoraDollarAccessControl is AgoraAccessControl {
     /// @notice The BRIDGE_BURNER_ROLE identifier
     string public constant BRIDGE_BURNER_ROLE = "BRIDGE_BURNER_ROLE";
 
+    /// @notice The RATE_LIMIT_MANAGER_ROLE identifier
+    string public constant RATE_LIMIT_MANAGER_ROLE = "RATE_LIMIT_MANAGER_ROLE";
+
     /// @notice The ```_initializeAgoraDollarAccessControl``` function initializes the AgoraDollarAccessControl contract
     /// @dev This function adds the default roles that are required by the AgoraDollar contract
     /// @param _initialAdminAddress The address of the initial `ACCESS_CONTROL_MANAGER_ROLE` holder
@@ -48,7 +51,8 @@ abstract contract AgoraDollarAccessControl is AgoraAccessControl {
         address _initialMinter,
         address _initialBurner,
         address _initialPauser,
-        address _initialFreezer
+        address _initialFreezer,
+        address _initialRateLimitManager
     ) internal {
         _initializeAgoraAccessControl({ _initialAdminAddress: _initialAdminAddress });
 
@@ -67,6 +71,10 @@ abstract contract AgoraDollarAccessControl is AgoraAccessControl {
         // setup the freezer role
         _addRoleToSet({ _role: FREEZER_ROLE });
         _assignRole({ _role: FREEZER_ROLE, _member: _initialFreezer, _addRole: true });
+
+        // setup the rate limit manager role
+        _addRoleToSet({ _role: RATE_LIMIT_MANAGER_ROLE });
+        _assignRole({ _role: RATE_LIMIT_MANAGER_ROLE, _member: _initialRateLimitManager, _addRole: true });
 
         // setup the bridge minter role
         _addRoleToSet({ _role: BRIDGE_MINTER_ROLE });
@@ -197,5 +205,25 @@ abstract contract AgoraDollarAccessControl is AgoraAccessControl {
         _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
 
         _assignRole({ _role: BRIDGE_BURNER_ROLE, _member: _member, _addRole: false });
+    }
+
+    /// @notice The ```grantRateLimitManagerRole``` function grants `RATE_LIMIT_MANAGER_ROLE` to an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function grantRateLimitManagerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: RATE_LIMIT_MANAGER_ROLE, _member: _member, _addRole: true });
+    }
+
+    /// @notice The ```revokeRateLimitManagerRole``` function revokes `RATE_LIMIT_MANAGER_ROLE` from an address
+    /// @dev Must be called by an address holding `ACCESS_CONTROL_MANAGER_ROLE`
+    /// @param _member The address to be assigned the role
+    function revokeRateLimitManagerRole(address _member) external {
+        // Checks: Only Admin can transfer role
+        _requireSenderIsRole({ _role: ACCESS_CONTROL_MANAGER_ROLE });
+
+        _assignRole({ _role: RATE_LIMIT_MANAGER_ROLE, _member: _member, _addRole: false });
     }
 }

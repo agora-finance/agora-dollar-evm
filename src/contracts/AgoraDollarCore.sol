@@ -43,12 +43,14 @@ struct ConstructorParams {
 /// @param initialBurnerAddress The address of the initial burner
 /// @param initialPauserAddress The address of the initial pauser
 /// @param initialFreezerAddress The address of the initial freezer
+/// @param initialRateLimitManagerAddress The address of the initial rate limit manager
 struct InitializeParams {
     address initialAdminAddress;
     address initialMinterAddress;
     address initialBurnerAddress;
     address initialPauserAddress;
     address initialFreezerAddress;
+    address initialRateLimitManagerAddress;
 }
 
 /// @title AgoraDollarCore
@@ -77,13 +79,14 @@ contract AgoraDollarCore is Initializable, Eip3009, Erc2612, Erc20Privileged {
     /// @notice The ```initialize``` function initializes the AgoraDollarCore and inherited contracts
     /// @dev Has a modifier to prevent reinitialization
     /// @param _params The struct to define the initial addresses for role-based access control
-    function initialize(InitializeParams memory _params) external reinitializer(3) {
+    function initialize(InitializeParams memory _params) external reinitializer(4) {
         _initializeAgoraDollarAccessControl({
             _initialAdminAddress: _params.initialAdminAddress,
             _initialMinter: _params.initialMinterAddress,
             _initialBurner: _params.initialBurnerAddress,
             _initialPauser: _params.initialPauserAddress,
-            _initialFreezer: _params.initialFreezerAddress
+            _initialFreezer: _params.initialFreezerAddress,
+            _initialRateLimitManager: _params.initialRateLimitManagerAddress
         });
     }
 

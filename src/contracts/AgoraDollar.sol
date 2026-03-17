@@ -177,6 +177,12 @@ contract AgoraDollar is AgoraDollarCore {
         return getRoleMembers(BRIDGE_BURNER_ROLE);
     }
 
+    /// @notice The ```getRateLimitManagerRoleMembers``` function returns the addresses holding `RATE_LIMIT_MANAGER_ROLE`
+    /// @return The array of addresses holding `RATE_LIMIT_MANAGER_ROLE`
+    function getRateLimitManagerRoleMembers() external view returns (address[] memory) {
+        return getRoleMembers(RATE_LIMIT_MANAGER_ROLE);
+    }
+
     //==============================================================================
     // External View Functions: Eip712
     //==============================================================================
@@ -369,6 +375,6 @@ contract AgoraDollar is AgoraDollarCore {
     /// @notice The ```version``` function returns the version of the AgoraDollar
     /// @return _version The version of the AgoraDollar
     function version() public pure returns (Version memory _version) {
-        _version = Version({ major: 2, minor: 0, patch: 0 });
+        _version = Version({ major: 2, minor: 1, patch: 0 });
     }
 }

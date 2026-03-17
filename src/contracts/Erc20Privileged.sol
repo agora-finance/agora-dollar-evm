@@ -14,13 +14,13 @@ pragma solidity 0.8.28;
 
 import { SafeCastLib } from "solady/src/utils/SafeCastLib.sol";
 
-import { AgoraDollarAccessControl } from "./AgoraDollarAccessControl.sol";
+import { AgoraDollarMintRateLimit } from "./AgoraDollarMintRateLimit.sol";
 import { Erc20Core } from "./Erc20Core.sol";
 
 import { StorageLib } from "./proxy/StorageLib.sol";
 
 /// @notice The ```Erc20Privileged``` contract extends the ```Erc20Core``` contract with privileged actions (mint, burn, freeze)
-abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
+abstract contract Erc20Privileged is Erc20Core, AgoraDollarMintRateLimit {
     using SafeCastLib for uint256;
     using StorageLib for uint256;
 
@@ -80,7 +80,10 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
         return true;
     }
 
+    /// @dev The maximum amount that can be minted is `type(uint248).max` due to storage optimization
     function _mint(address _account, uint256 _amount) internal {
+        _outflow({ _minter: msg.sender, _amount: _amount });
+
         // Checks: account cannot be 0 address
         if (_account == address(0)) revert ERC20InvalidReceiver({ receiver: address(0) });
 
@@ -95,7 +98,7 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
 
         // Emit event
         emit Transfer({ from: address(0), to: _account, value: _amount });
-        emit Minted({ receiver: _account, value: _amount });
+        emit Minted({ sender: msg.sender, receiver: _account, value: _amount });
     }
 
     //==============================================================================
@@ -143,8 +146,9 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
 
         if (_isRole({ _role: BRIDGE_BURNER_ROLE, _member: msg.sender })) {
             // Checks: bridging must not be paused
-            if (StorageLib.sloadImplementationSlotDataAsUint256().isBridgingPaused())
+            if (StorageLib.sloadImplementationSlotDataAsUint256().isBridgingPaused()) {
                 revert StorageLib.BridgingPaused();
+            }
             // Checks: _from account must not be frozen
             StorageLib.Erc20AccountData memory _accountDataFrom = StorageLib.getPointerToErc20CoreStorage().accountData[
                 _from
@@ -167,8 +171,9 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
         StorageLib.Erc20AccountData memory _accountDataFrom = StorageLib.getPointerToErc20CoreStorage().accountData[
             _account
         ];
-        if (_accountDataFrom.balance < _value248)
+        if (_accountDataFrom.balance < _value248) {
             revert ERC20InsufficientBalance({ sender: _account, balance: _accountDataFrom.balance, needed: _value248 });
+        }
 
         // Effects: subtract from totalSupply and account balance
         StorageLib.getPointerToErc20CoreStorage().totalSupply -= _value248;
@@ -176,7 +181,7 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
 
         // emit event (include Burned event to prevent spoofing of Transfer event as we don't check for 0 address in transfer)
         emit Transfer({ from: _account, to: address(0), value: _amount });
-        emit Burned({ burnFrom: _account, value: _amount });
+        emit Burned({ sender: msg.sender, burnFrom: _account, value: _amount });
     }
 
     //==============================================================================
@@ -237,12 +242,14 @@ abstract contract Erc20Privileged is Erc20Core, AgoraDollarAccessControl {
     event AccountFrozen(address indexed account);
 
     /// @notice The ```Minted``` event is emitted when tokens are minted
+    /// @param sender The account that initiated the mint
     /// @param receiver The account that received the minted tokens
     /// @param value The amount of tokens minted
-    event Minted(address indexed receiver, uint256 value);
+    event Minted(address indexed sender, address indexed receiver, uint256 value);
 
     /// @notice The ```Burned``` event is emitted when tokens are burned
+    /// @param sender The account that initiated the burn
     /// @param burnFrom The account that burned the tokens
     /// @param value The amount of tokens burned
-    event Burned(address indexed burnFrom, uint256 value);
+    event Burned(address indexed sender, address indexed burnFrom, uint256 value);
 }
