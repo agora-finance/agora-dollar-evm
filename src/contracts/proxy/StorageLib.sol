@@ -306,6 +306,43 @@ library StorageLib {
     }
 
     //==============================================================================
+    // RateLimit Slot Items
+    //==============================================================================
+
+    /// @notice Rate Limit struct.
+    /// @param amountInFlight The amount in the current window.
+    /// @param lastUpdated Timestamp representing the last time the rate limit was checked or updated.
+    /// @param limit This represents the maximum allowed amount within a given window.
+    /// @param window Defines the duration of the rate limiting window.
+    struct RateLimit {
+        uint256 amountInFlight;
+        uint256 lastUpdated;
+        uint256 limit;
+        uint256 window;
+    }
+
+    /// @notice The MintRateLimitStorage struct
+    /// @param MintRateLimitStorage Mapping from minter address to RateLimit configurations.
+    /// @custom:storage-location erc7201:AgoraDollarErc1967Proxy.MintRateLimitStorage
+    struct MintRateLimitStorage {
+        mapping(address minter => RateLimit limit) rateLimits;
+    }
+
+    /// @notice The ```MINT_RATE_LIMIT_STORAGE_SLOT``` is the storage slot for the MintRateLimitStorage struct
+    /// @dev keccak256(abi.encode(uint256(keccak256("AgoraDollarErc1967Proxy.MintRateLimitStorage")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 internal constant MINT_RATE_LIMIT_STORAGE_SLOT =
+        0xdbb7496039d83aff244e00691e8f456fd1760542eb35f98e0e87f449c82c5500;
+
+    /// @notice The ```getPointerToMintRateLimitStorage``` function returns a pointer to the MintRateLimitStorage struct
+    /// @return $ A pointer to the MintRateLimitStorage struct
+    function getPointerToMintRateLimitStorage() internal pure returns (MintRateLimitStorage storage $) {
+        /// @solidity memory-safe-assembly
+        assembly {
+            $.slot := MINT_RATE_LIMIT_STORAGE_SLOT
+        }
+    }
+
+    //==============================================================================
     // Errors
     //==============================================================================
 

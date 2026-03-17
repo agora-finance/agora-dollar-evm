@@ -162,8 +162,9 @@ abstract contract Eip3009 is Eip712, Erc20Core {
     /// @param _authorizer    Authorizer's address
     /// @param _nonce         Nonce of the authorization
     function _requireUnusedAuthorization(address _authorizer, bytes32 _nonce) private view {
-        if (StorageLib.getPointerToEip3009Storage().isAuthorizationUsed[_authorizer][_nonce])
+        if (StorageLib.getPointerToEip3009Storage().isAuthorizationUsed[_authorizer][_nonce]) {
             revert UsedOrCanceledAuthorization();
+        }
     }
 
     //==============================================================================
