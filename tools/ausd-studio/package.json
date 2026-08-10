@@ -1,0 +1,33 @@
+{
+  "name": "ausd-studio",
+  "version": "1.0.0",
+  "description": "Institutional Reserve Proof, Minting Simulator & Zero-Slippage StableSwap Studio for Agora Dollar (AUSD).",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "ausd-cli": "./bin/ausd-cli.js"
+  },
+  "scripts": {
+    "start": "node src/server/app.js",
+    "cli": "node bin/ausd-cli.js",
+    "test": "node tests/run-all.js"
+  },
+  "keywords": [
+    "agora",
+    "ausd",
+    "agora-dollar",
+    "stablecoin",
+    "proof-of-reserve",
+    "stableswap",
+    "rwa",
+    "treasury-bills"
+  ],
+  "author": "Agora Finance Community",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "express": "^4.21.2"
+  }
+}
